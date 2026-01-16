@@ -1,5 +1,7 @@
+require('dotenv').config();
 const mongoose = require('mongoose')
-const mongoURI = "mongodb://127.0.0.1:27017/IMS";
+// const mongoURI = "mongodb://127.0.0.1:27017/IMS";
+const mongoURI = process.env.MONGO_URI;
 
 const connectToMongo = async () => {
   try {

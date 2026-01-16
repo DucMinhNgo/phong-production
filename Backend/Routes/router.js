@@ -79,5 +79,11 @@ router.delete('/deleteproduct/:id', async (req, res) => {
     }
 })
 
+router.get('/', async (req, res) => {
+    res.status(201).json({
+        name: "Phong Cho"
+    });
+})
+
 
 module.exports = router;
