@@ -115,7 +115,14 @@ export default function InsertUser() {
                 // Don't navigate yet, show QR for IP capture
             }
             else if (res.status === 422) {
-                alert("Mã số nhân viên này đã tồn tại.");
+                // Check if it's EmployeeCode or DeviceIP error
+                if (data.includes("nhân viên")) {
+                    setError("Mã số nhân viên đã tồn tại.");
+                } else if (data.includes("IP")) {
+                    setError("IP thiết bị đã được sử dụng bởi nhân viên khác.");
+                } else {
+                    setError(data);
+                }
             }
             else {
                 setError("Có lỗi xảy ra. Vui lòng thử lại.");

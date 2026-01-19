@@ -436,22 +436,33 @@ router.post("/insertuser", async (req, res) => {
     const { UserName, EmployeeCode, DeviceIP } = req.body;
 
     try {
-        const pre = await users.findOne({ EmployeeCode: EmployeeCode })
-        console.log(pre);
+        // Check if EmployeeCode already exists
+        const existingEmployee = await users.findOne({ EmployeeCode: EmployeeCode })
+        console.log(existingEmployee);
 
-        if (pre) {
-            res.status(422).json("Mã số nhân viên đã tồn tại.")
+        if (existingEmployee) {
+            return res.status(422).json("Mã số nhân viên đã tồn tại.")
         }
-        else {
-            const addUser = new users({ UserName, EmployeeCode, DeviceIP })
 
-            await addUser.save();
-            res.status(201).json(addUser)
-            console.log(addUser)
+        // Check if DeviceIP already exists (if provided)
+        if (DeviceIP) {
+            const existingIP = await users.findOne({ DeviceIP: DeviceIP })
+            console.log(existingIP);
+
+            if (existingIP) {
+                return res.status(422).json("IP thiết bị này đã được sử dụng bởi nhân viên khác.")
+            }
         }
+
+        const addUser = new users({ UserName, EmployeeCode, DeviceIP })
+
+        await addUser.save();
+        res.status(201).json(addUser)
+        console.log(addUser)
     }
     catch (err) {
         console.log(err)
+        res.status(500).json("Có lỗi xảy ra khi thêm nhân viên.")
     }
 })
 
@@ -497,6 +508,30 @@ router.put('/updateuser/:id', async (req, res) => {
     const { UserName, EmployeeCode, DeviceIP } = req.body;
 
     try {
+        // Check if EmployeeCode already exists for another user
+        if (EmployeeCode) {
+            const existingEmployee = await users.findOne({
+                EmployeeCode: EmployeeCode,
+                _id: { $ne: req.params.id } // Exclude current user
+            });
+
+            if (existingEmployee) {
+                return res.status(422).json("Mã số nhân viên đã tồn tại.")
+            }
+        }
+
+        // Check if DeviceIP already exists for another user
+        if (DeviceIP) {
+            const existingIP = await users.findOne({
+                DeviceIP: DeviceIP,
+                _id: { $ne: req.params.id } // Exclude current user
+            });
+
+            if (existingIP) {
+                return res.status(422).json("IP thiết bị này đã được sử dụng bởi nhân viên khác.")
+            }
+        }
+
         const updateData = {
             UserName,
             EmployeeCode,
@@ -504,7 +539,7 @@ router.put('/updateuser/:id', async (req, res) => {
         };
 
         // Chỉ thêm DeviceIP nếu được cung cấp
-        if (DeviceIP) {
+        if (DeviceIP !== undefined) {
             updateData.DeviceIP = DeviceIP;
         }
 
@@ -514,6 +549,7 @@ router.put('/updateuser/:id', async (req, res) => {
     }
     catch (err) {
         console.log(err);
+        res.status(500).json("Có lỗi xảy ra khi cập nhật nhân viên.");
     }
 })
 
@@ -538,6 +574,19 @@ router.put('/update-user-ip/:id', async (req, res) => {
                     (req.connection.socket ? req.connection.socket.remoteAddress : null);
 
     try {
+        // Check if another user already uses this IP
+        const existingUser = await users.findOne({
+            DeviceIP: clientIP,
+            _id: { $ne: req.params.id } // Exclude current user
+        });
+
+        if (existingUser) {
+            return res.status(422).json({
+                error: "IP thiết bị này đã được sử dụng bởi nhân viên khác.",
+                existingUser: `${existingUser.UserName} (${existingUser.EmployeeCode})`
+            });
+        }
+
         const updateUser = await users.findByIdAndUpdate(
             req.params.id,
             {
@@ -564,6 +613,68 @@ router.get('/capture-user-ip/:id', async (req, res) => {
                     (req.connection.socket ? req.connection.socket.remoteAddress : null);
 
     try {
+        // Check if another user already uses this IP
+        const existingUser = await users.findOne({
+            DeviceIP: clientIP,
+            _id: { $ne: req.params.id } // Exclude current user
+        });
+
+        if (existingUser) {
+            return res.status(200).send(`
+                <html>
+                    <head>
+                        <title>IP đã được sử dụng</title>
+                        <meta charset="UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <style>
+                            body {
+                                font-family: Arial, sans-serif;
+                                text-align: center;
+                                padding: 50px;
+                                background-color: #ffebee;
+                            }
+                            .error {
+                                color: #dc3545;
+                                font-size: 24px;
+                                margin-bottom: 20px;
+                            }
+                            .message {
+                                font-size: 18px;
+                                color: #333;
+                                margin-bottom: 10px;
+                            }
+                            .existing-user {
+                                font-size: 16px;
+                                color: #666;
+                                margin-bottom: 30px;
+                                font-weight: bold;
+                                background-color: #f8d7da;
+                                padding: 15px;
+                                border-radius: 5px;
+                            }
+                            .button {
+                                background-color: #dc3545;
+                                color: white;
+                                padding: 12px 24px;
+                                text-decoration: none;
+                                border-radius: 5px;
+                                font-size: 16px;
+                                display: inline-block;
+                            }
+                            .button:hover {
+                                background-color: #c82333;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="error">❌</div>
+                        <div class="message">IP thiết bị này đã được sử dụng bởi nhân viên khác!</div>
+                        <div class="existing-user">Nhân viên hiện tại: ${existingUser.UserName} (${existingUser.EmployeeCode})</div>
+                    </body>
+                </html>
+            `);
+        }
+
         const updateUser = await users.findByIdAndUpdate(
             req.params.id,
             {
