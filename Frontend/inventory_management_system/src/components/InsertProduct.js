@@ -3,7 +3,6 @@ import { NavLink, useNavigate } from 'react-router-dom';
 
 export default function InsertProduct() {
     const [productName, setProductName] = useState("");
-    const [productPrice, setProductPrice] = useState();
     const [productBarcode, setProductBarcode] = useState();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -11,10 +10,6 @@ export default function InsertProduct() {
 
     const setName = (e) => {
         setProductName(e.target.value);
-    }
-
-    const setPrice = (e) => {
-        setProductPrice(e.target.value);
     }
 
     const setBarcode = (e) => {
@@ -39,26 +34,25 @@ export default function InsertProduct() {
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ "ProductName": productName, "ProductPrice": productPrice, "ProductBarcode": productBarcode })
+                body: JSON.stringify({ "ProductName": productName, "ProductBarcode": productBarcode })
             });
 
             await res.json();
 
             if (res.status === 201) {
-                alert("Data Inserted");
+                alert("Thêm sản phẩm thành công!");
                 setProductName("");
-                setProductPrice(0);
-                setProductBarcode(0);
+                setProductBarcode("");
                 navigate('/products');
             }
             else if (res.status === 422) {
-                alert("Product is already added with that barcode.");
+                alert("Sản phẩm với số hiệu lố này đã tồn tại.");
             }
             else {
-                setError("Something went wrong. Please try again.");
+                setError("Có lỗi xảy ra. Vui lòng thử lại.");
             }
         } catch (err) {
-            setError("An error occurred. Please try again later.");
+            setError("Đã xảy ra lỗi. Vui lòng thử lại sau.");
             console.log(err);
         } finally {
             setLoading(false);

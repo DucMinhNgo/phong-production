@@ -30,7 +30,18 @@ router.post("/insertproduct", async (req, res) => {
 router.get('/products', async (req, res) => {
 
     try {
-        const getProducts = await products.find({})
+        const { sortBy, order } = req.query;
+
+        // Default sort: newest first
+        let sortOptions = { ProductCreatedDate: -1 };
+
+        // If sortBy is provided, use it
+        if (sortBy) {
+            const sortOrder = order === 'asc' ? 1 : -1;
+            sortOptions = { [sortBy]: sortOrder };
+        }
+
+        const getProducts = await products.find({}).sort(sortOptions);
         console.log(getProducts);
         res.status(201).json(getProducts);
     }
@@ -54,10 +65,24 @@ router.get('/products/:id', async (req, res) => {
 
 //Editing(Updating) Data:
 router.put('/updateproduct/:id', async (req, res) => {
-    const { ProductName, ProductBarcode } = req.body;
+    const { ProductName, ProductBarcode, ProductDeliveryDate, ProductReceivedDate } = req.body;
 
     try {
-        const updateProducts = await products.findByIdAndUpdate(req.params.id, { ProductName, ProductBarcode }, { new: true });
+        const updateData = {
+            ProductName,
+            ProductBarcode,
+            ProductUpdatedDate: new Date()
+        };
+
+        // Chỉ thêm các trường ngày nếu chúng được cung cấp
+        if (ProductDeliveryDate) {
+            updateData.ProductDeliveryDate = new Date(ProductDeliveryDate);
+        }
+        if (ProductReceivedDate) {
+            updateData.ProductReceivedDate = new Date(ProductReceivedDate);
+        }
+
+        const updateProducts = await products.findByIdAndUpdate(req.params.id, updateData, { new: true });
         console.log("Data Updated");
         res.status(201).json(updateProducts);
     }

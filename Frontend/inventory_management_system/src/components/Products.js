@@ -59,21 +59,21 @@ export default function Products() {
 
 
             <div className='container-fluid p-5'>
-                <h1>Products Inventory</h1>
+                <h1>Danh sách mặt hàng</h1>
                 <div className='add_button'>
-                    <NavLink to="/insertproduct" className='btn btn-primary fs-5'> + Add New Product</NavLink>
+                    <NavLink to="/insertproduct" className='btn btn-primary fs-5'> + Thêm mặt hàng mới</NavLink>
                 </div>
                 <div className="overflow-auto mt-3" style={{ maxHeight: "38rem" }}>
                     <table className="table table-striped table-hover mt-3 fs-5">
                         <thead>
                             <tr className="tr_color">
                                 <th scope="col">#</th>
-                                <th scope="col">Ngày</th>
+                                <th scope="col">Ngày tạo</th>
                                 <th scope="col">Tên hàng</th>
-                                {/* <th scope="col">Product Price</th> */}
                                 <th scope="col">Số hiệu lố</th>
                                 <th scope="col">Ngày giao</th>
                                 <th scope="col">Ngày nhận</th>
+                                <th scope="col">Ngày cập nhật</th>
                                 {/* <th scope="col">Update</th>
                                 <th scope="col">Delete</th> */}
                             </tr>
@@ -82,15 +82,23 @@ export default function Products() {
 
                             {
                                 productData.map((element, id) => {
+                                    // Format date function
+                                    const formatDate = (dateString) => {
+                                        if (!dateString) return '-';
+                                        const date = new Date(dateString);
+                                        return date.toLocaleDateString('vi-VN');
+                                    };
+
                                     return (
                                         <>
                                             <tr>
                                                 <th scope="row">{id + 1}</th>
+                                                <td>{formatDate(element.ProductCreatedDate)}</td>
                                                 <td>{element.ProductName}</td>
-                                                {/* <td>{element.ProductPrice}</td> */}
                                                 <td>{element.ProductBarcode}</td>
-                                                <td>{element.ProductDeliveryDate}</td>
-                                                <td>{element.ProductReceivedDate}</td>
+                                                <td>{formatDate(element.ProductDeliveryDate)}</td>
+                                                <td>{formatDate(element.ProductReceivedDate)}</td>
+                                                <td>{formatDate(element.ProductUpdatedDate)}</td>
 
                                                 {/* <td><NavLink to={`/updateproduct/${element._id}`} className="btn btn-primary"><i className="fa-solid fa-pen-to-square"></i></NavLink></td>
                                                 <td><button className="btn btn-danger" onClick={() => deleteProduct(element._id)}><i class="fa-solid fa-trash"></i></button></td> */}

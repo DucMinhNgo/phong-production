@@ -9,6 +9,23 @@ const ProductSchema = new mongoose.Schema(
             type: Number,
             required: true,
         },
+        ProductCreatedDate: {
+            type: Date,
+            default: Date.now,
+            required: false,
+        },
+        ProductDeliveryDate: {
+            type: Date,
+            required: false,
+        },
+        ProductReceivedDate: {
+            type: Date,
+            required: false,
+        },
+        ProductUpdatedDate: {
+            type: Date,
+            required: false,
+        },
     });
 
 const Products = mongoose.model("Products", ProductSchema)

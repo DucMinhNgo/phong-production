@@ -4,6 +4,8 @@ import { NavLink, useParams, useNavigate } from 'react-router-dom';
 export default function UpdateProduct() {
     const [productName, setProductName] = useState("");
     const [productBarcode, setProductBarcode] = useState();
+    const [productDeliveryDate, setProductDeliveryDate] = useState("");
+    const [productReceivedDate, setProductReceivedDate] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const navigate = useNavigate("");
@@ -15,6 +17,14 @@ export default function UpdateProduct() {
       const setBarcode = (e) => {
         const value = e.target.value.slice(0, 12);
         setProductBarcode(value);
+    };
+
+    const setDeliveryDate = (e) => {
+        setProductDeliveryDate(e.target.value);
+    };
+
+    const setReceivedDate = (e) => {
+        setProductReceivedDate(e.target.value);
     };
 
     const {id} = useParams("");
@@ -35,6 +45,16 @@ export default function UpdateProduct() {
               console.log("Data Retrieved.");
               setProductName(data.ProductName);
               setProductBarcode(data.ProductBarcode);
+
+              // Format dates for input fields
+              if (data.ProductDeliveryDate) {
+                const deliveryDate = new Date(data.ProductDeliveryDate).toISOString().split('T')[0];
+                setProductDeliveryDate(deliveryDate);
+              }
+              if (data.ProductReceivedDate) {
+                const receivedDate = new Date(data.ProductReceivedDate).toISOString().split('T')[0];
+                setProductReceivedDate(receivedDate);
+              }
             } else {
               console.log("Something went wrong. Please try again.");
             }
@@ -63,20 +83,25 @@ export default function UpdateProduct() {
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ "ProductName": productName, "ProductBarcode": productBarcode })
+                body: JSON.stringify({
+                    "ProductName": productName,
+                    "ProductBarcode": productBarcode,
+                    "ProductDeliveryDate": productDeliveryDate || null,
+                    "ProductReceivedDate": productReceivedDate || null
+                })
             });
 
             await response.json();
 
             if (response.status === 201) {
-                alert("Data Updated");
+                alert("Cập nhật thành công!");
                 navigate('/products');
             }
             else {
-                setError("Something went wrong. Please try again.");
+                setError("Có lỗi xảy ra. Vui lòng thử lại.");
             }
         } catch (err) {
-            setError("An error occurred. Please try again later.");
+            setError("Đã xảy ra lỗi. Vui lòng thử lại sau.");
             console.log(err);
         } finally {
             setLoading(false);
@@ -95,6 +120,17 @@ export default function UpdateProduct() {
                 <div className="col-lg-5 col-md-5 col-12 fs-4 mb-4">
                     <label htmlFor="product_barcode" className="form-label fw-bold">Số hiệu lố</label>
                     <input type="number" onChange={setBarcode} value={productBarcode} maxLength={12} className="form-control fs-5" id="product_barcode" placeholder="Nhập số hiệu lố" required />
+                </div>
+            </div>
+
+            <div className="row justify-content-center">
+                <div className="col-lg-5 col-md-5 col-12 fs-4 mb-4">
+                    <label htmlFor="product_delivery_date" className="form-label fw-bold">Ngày giao</label>
+                    <input type="date" onChange={setDeliveryDate} value={productDeliveryDate} className="form-control fs-5" id="product_delivery_date" />
+                </div>
+                <div className="col-lg-5 col-md-5 col-12 fs-4 mb-4">
+                    <label htmlFor="product_received_date" className="form-label fw-bold">Ngày nhận</label>
+                    <input type="date" onChange={setReceivedDate} value={productReceivedDate} className="form-control fs-5" id="product_received_date" />
                 </div>
             </div>
 
