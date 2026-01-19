@@ -104,6 +104,46 @@ router.delete('/deleteproduct/:id', async (req, res) => {
     }
 })
 
+// Update delivery date via QR scan
+router.put('/update-delivery/:id', async (req, res) => {
+    try {
+        const updateProducts = await products.findByIdAndUpdate(
+            req.params.id,
+            {
+                ProductDeliveryDate: new Date(),
+                ProductUpdatedDate: new Date()
+            },
+            { new: true }
+        );
+        console.log("Delivery date updated");
+        res.status(201).json(updateProducts);
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({ error: "Failed to update delivery date" });
+    }
+})
+
+// Update received date via QR scan
+router.put('/update-received/:id', async (req, res) => {
+    try {
+        const updateProducts = await products.findByIdAndUpdate(
+            req.params.id,
+            {
+                ProductReceivedDate: new Date(),
+                ProductUpdatedDate: new Date()
+            },
+            { new: true }
+        );
+        console.log("Received date updated");
+        res.status(201).json(updateProducts);
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({ error: "Failed to update received date" });
+    }
+})
+
 router.get('/', async (req, res) => {
     res.status(201).json({
         name: "Phong Cho"
