@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import io from 'socket.io-client'
-
-// Get network IP for QR codes (change this to your machine's IP)
-const NETWORK_IP = '192.168.0.104'; // Change this to your actual IP address
-const API_PORT = 3001;
+import { NETWORK_IP, API_PORT, API_BASE_URL, WS_URL } from '../config'
 
 // QR Code component using online service - Read only for mobile scanning
 const QRCode = ({ value, size = 120 }) => {
@@ -70,7 +67,7 @@ export default function Users() {
         getUsers();
 
         // Connect to Socket.IO server
-        const newSocket = io('http://localhost:3001');
+        const newSocket = io(WS_URL);
         setSocket(newSocket);
 
         // Listen for user updates (when IP is captured)
@@ -89,7 +86,7 @@ export default function Users() {
     const getUsers = async (e) => {
 
         try {
-            const res = await fetch("http://localhost:3001/users", {
+            const res = await fetch(`${API_BASE_URL}/users`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json"
@@ -112,7 +109,7 @@ export default function Users() {
 
     const deleteUser = async (id) => {
 
-        const response = await fetch(`http://localhost:3001/deleteuser/${id}`, {
+        const response = await fetch(`${API_BASE_URL}/deleteuser/${id}`, {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json"
@@ -194,7 +191,7 @@ export default function Users() {
                                                 <td style={{ textAlign: 'center' }}>{formatDate(element.LastLoginDate)}</td>
                                                 <td style={{ minWidth: '140px', textAlign: 'center', verticalAlign: 'middle' }}>
                                                     <QRCode
-                                                        value={`http://localhost:3001/capture-user-ip/${element._id}`}
+                                                        value={`${API_BASE_URL}/capture-user-ip/${element._id}`}
                                                         size={100}
                                                     />
                                                     <div style={{

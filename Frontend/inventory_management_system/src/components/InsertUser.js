@@ -1,9 +1,6 @@
 import React, { useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom';
-
-// Get network IP for QR codes (change this to your machine's IP)
-const NETWORK_IP = '192.168.0.104'; // Change this to your actual IP address
-const API_PORT = 3001;
+import { NETWORK_IP, API_PORT, API_BASE_URL } from '../config'
 
 // QR Code component using online service - Read only for mobile scanning
 const QRCode = ({ value, size = 120 }) => {
@@ -94,7 +91,7 @@ export default function InsertUser() {
         setError("");
 
         try {
-            const res = await fetch("http://localhost:3001/insertuser", {
+            const res = await fetch(`${API_BASE_URL}/insertuser`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -179,7 +176,7 @@ export default function InsertUser() {
 
                     <div className="mb-4">
                         <QRCode
-                            value={`http://localhost:3001/capture-user-ip/${userId}`}
+                            value={`${API_BASE_URL}/capture-user-ip/${userId}`}
                             size={150}
                         />
                         <div style={{

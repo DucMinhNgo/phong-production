@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import io from 'socket.io-client'
-
-// Get network IP for QR codes (change this to your machine's IP)
-const NETWORK_IP = '192.168.0.104'; // Change this to your actual IP address
-const API_PORT = 3001;
+import { NETWORK_IP, API_PORT, API_BASE_URL, WS_URL } from '../config'
 
 // QR Code component using online service - Read only for mobile scanning
 const QRCode = ({ value, size = 120 }) => {
@@ -70,7 +67,7 @@ export default function Products() {
         getProducts();
 
         // Connect to Socket.IO server
-        const newSocket = io('http://localhost:3001');
+        const newSocket = io(WS_URL);
         setSocket(newSocket);
 
         // Listen for product updates
@@ -89,7 +86,7 @@ export default function Products() {
     const getProducts = async (e) => {
 
         try {
-            const res = await fetch("http://localhost:3001/products", {
+            const res = await fetch(`${API_BASE_URL}/products`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json"
@@ -112,7 +109,7 @@ export default function Products() {
 
     const deleteProduct = async (id) => {
 
-        const response = await fetch(`http://localhost:3001/deleteproduct/${id}`, {
+        const response = await fetch(`${API_BASE_URL}/deleteproduct/${id}`, {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json"
@@ -190,13 +187,13 @@ export default function Products() {
                                         if (!element.ProductDeliveryDate) {
                                             // Show delivery QR if no delivery date
                                             return {
-                                                url: `http://localhost:3001/update-delivery/${element._id}`,
+                                                url: `${API_BASE_URL}/update-delivery/${element._id}`,
                                                 label: 'Quét để cập nhật ngày giao'
                                             };
                                         } else if (!element.ProductReceivedDate) {
                                             // Show received QR if delivery date exists but no received date
                                             return {
-                                                url: `http://localhost:3001/update-received/${element._id}`,
+                                                url: `${API_BASE_URL}/update-received/${element._id}`,
                                                 label: 'Quét để cập nhật ngày nhận'
                                             };
                                         }

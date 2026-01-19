@@ -1,0 +1,8 @@
+# Environment variables for Inventory Management System
+# Copy this file to .env and update the values
+
+# IP address of the machine running the backend server
+REACT_APP_NETWORK_IP=192.168.0.104
+
+# Port number of the backend server
+REACT_APP_API_PORT=3001

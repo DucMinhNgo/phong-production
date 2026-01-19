@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { NavLink, useParams, useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from '../config';
 
 export default function UpdateProduct() {
     const [productName, setProductName] = useState("");
@@ -32,7 +33,7 @@ export default function UpdateProduct() {
     useEffect(() => {
         const getProduct = async () => {
           try {
-            const res = await fetch(`http://localhost:3001/products/${id}`, {
+            const res = await fetch(`${API_BASE_URL}/products/${id}`, {
               method: "GET",
               headers: {
                 "Content-Type": "application/json"
@@ -78,7 +79,7 @@ export default function UpdateProduct() {
         setError("");
 
         try {
-            const response = await fetch(`http://localhost:3001/updateproduct/${id}`, {
+            const response = await fetch(`${API_BASE_URL}/updateproduct/${id}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json"

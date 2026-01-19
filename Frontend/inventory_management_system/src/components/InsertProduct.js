@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from '../config';
 
 export default function InsertProduct() {
     const [productName, setProductName] = useState("");
@@ -29,7 +30,7 @@ export default function InsertProduct() {
         setError("");
 
         try {
-            const res = await fetch("http://localhost:3001/insertproduct", {
+            const res = await fetch(`${API_BASE_URL}/insertproduct`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
