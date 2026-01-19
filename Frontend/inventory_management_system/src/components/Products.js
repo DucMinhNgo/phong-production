@@ -135,16 +135,16 @@ export default function Products() {
                     <table className="table table-striped table-hover mt-3 fs-6" style={{ minWidth: '1400px' }}>
                         <thead>
                             <tr className="tr_color">
-                                <th scope="col">#</th>
-                                <th scope="col">Ngày tạo</th>
-                                <th scope="col">Tên hàng</th>
-                                <th scope="col">Số hiệu lố</th>
-                                <th scope="col">Ngày giao</th>
-                                <th scope="col">Ngày nhận</th>
-                                <th scope="col">Ngày cập nhật</th>
+                                <th scope="col" style={{ textAlign: 'center' }}>#</th>
+                                <th scope="col" style={{ textAlign: 'center' }}>Ngày tạo</th>
+                                <th scope="col" style={{ textAlign: 'center' }}>Tên hàng</th>
+                                <th scope="col" style={{ textAlign: 'center' }}>Số hiệu lố</th>
+                                <th scope="col" style={{ textAlign: 'center' }}>Ngày giao</th>
+                                <th scope="col" style={{ textAlign: 'center' }}>Ngày nhận</th>
+                                <th scope="col" style={{ textAlign: 'center' }}>Ngày cập nhật</th>
                                 {/* <th scope="col">Người quét giao</th> */}
                                 {/* <th scope="col">Người quét nhận</th> */}
-                                <th scope="col">QR Code</th>
+                                <th scope="col" style={{ textAlign: 'center' }}>QR Code</th>
                                 {/* <th scope="col">Update</th>
                                 <th scope="col">Delete</th> */}
                             </tr>
@@ -190,13 +190,13 @@ export default function Products() {
                                     return (
                                         <>
                                             <tr>
-                                                <th scope="row">{id + 1}</th>
-                                                <td>{formatDate(element.ProductCreatedDate)}</td>
-                                                <td>{element.ProductName}</td>
-                                                <td>{element.ProductBarcode}</td>
-                                                <td>
-                                                    {formatDate(element.ProductDeliveryDate)}
-                                                    <div style={{ fontSize: '12px', maxWidth: '120px' }}>
+                                                <th scope="row" style={{ textAlign: 'center' }}>{id + 1}</th>
+                                                <td style={{ textAlign: 'center' }}>{formatDate(element.ProductCreatedDate)}</td>
+                                                <td style={{ textAlign: 'center' }}>{element.ProductName}</td>
+                                                <td style={{ textAlign: 'center' }}>{element.ProductBarcode}</td>
+                                                <td style={{ textAlign: 'center' }}>
+                                                    <div>{formatDate(element.ProductDeliveryDate)}</div>
+                                                    <div style={{ fontSize: '12px', marginTop: '5px', maxWidth: '120px', margin: '5px auto 0' }}>
                                                     {element.DeliveryScannedBy ? (
                                                         <span style={{ color: '#28a745', fontWeight: '500' }}>
                                                             {element.DeliveryScannedBy}
@@ -206,9 +206,9 @@ export default function Products() {
                                                     )}
                                                     </div>
                                                 </td>
-                                                <td>
-                                                    {formatDate(element.ProductReceivedDate)}
-                                                    <div style={{ fontSize: '12px', maxWidth: '120px' }}>
+                                                <td style={{ textAlign: 'center' }}>
+                                                    <div>{formatDate(element.ProductReceivedDate)}</div>
+                                                    <div style={{ fontSize: '12px', marginTop: '5px', maxWidth: '120px', margin: '5px auto 0' }}>
                                                     {element.ReceivedScannedBy ? (
                                                         <span style={{ color: '#007bff', fontWeight: '500' }}>
                                                             {element.ReceivedScannedBy}
@@ -218,10 +218,10 @@ export default function Products() {
                                                     )}
                                                     </div>
                                                 </td>
-                                                <td>{formatDate(element.ProductUpdatedDate)}</td>
-                                                <td style={{ minWidth: '140px' }}>
+                                                <td style={{ textAlign: 'center' }}>{formatDate(element.ProductUpdatedDate)}</td>
+                                                <td style={{ minWidth: '140px', textAlign: 'center', verticalAlign: 'middle' }}>
                                                     {qrContent ? (
-                                                        <div style={{ textAlign: 'center' }}>
+                                                        <div>
                                                             <QRCode
                                                                 value={qrContent.url}
                                                                 size={100}
@@ -237,7 +237,7 @@ export default function Products() {
                                                             </div>
                                                         </div>
                                                     ) : (
-                                                        <div style={{ textAlign: 'center', padding: '20px' }}>
+                                                        <div style={{ padding: '20px' }}>
                                                             <span style={{
                                                                 color: '#28a745',
                                                                 fontSize: '24px',

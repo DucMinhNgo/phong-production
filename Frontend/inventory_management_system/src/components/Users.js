@@ -134,13 +134,13 @@ export default function Users() {
                     <table className="table table-striped table-hover mt-3 fs-6" style={{ minWidth: '1000px' }}>
                         <thead>
                             <tr className="tr_color">
-                                <th scope="col">#</th>
-                                <th scope="col">Ngày tạo</th>
-                                <th scope="col">Tên người dùng</th>
-                                <th scope="col">Mã số nhân viên</th>
-                                <th scope="col">IP thiết bị</th>
-                                <th scope="col">Lần đăng nhập cuối</th>
-                                <th scope="col">QR Code</th>
+                                <th scope="col" style={{ textAlign: 'center' }}>#</th>
+                                <th scope="col" style={{ textAlign: 'center' }}>Ngày tạo</th>
+                                <th scope="col" style={{ textAlign: 'center' }}>Tên người dùng</th>
+                                <th scope="col" style={{ textAlign: 'center' }}>Mã số nhân viên</th>
+                                <th scope="col" style={{ textAlign: 'center' }}>IP thiết bị</th>
+                                <th scope="col" style={{ textAlign: 'center' }}>Lần đăng nhập cuối</th>
+                                <th scope="col" style={{ textAlign: 'center' }}>QR Code</th>
                                 {/* <th scope="col">Update</th>
                                 <th scope="col">Delete</th> */}
                             </tr>
@@ -166,29 +166,27 @@ export default function Users() {
                                     return (
                                         <>
                                             <tr>
-                                                <th scope="row">{id + 1}</th>
-                                                <td>{formatDate(element.CreatedDate)}</td>
-                                                <td>{element.UserName}</td>
-                                                <td>{element.EmployeeCode}</td>
-                                                <td style={{ fontFamily: 'monospace' }}>
+                                                <th scope="row" style={{ textAlign: 'center' }}>{id + 1}</th>
+                                                <td style={{ textAlign: 'center' }}>{formatDate(element.CreatedDate)}</td>
+                                                <td style={{ textAlign: 'center' }}>{element.UserName}</td>
+                                                <td style={{ textAlign: 'center' }}>{element.EmployeeCode}</td>
+                                                <td style={{ fontFamily: 'monospace', textAlign: 'center' }}>
                                                     {element.DeviceIP || <span style={{ color: '#dc3545' }}>Chưa có IP</span>}
                                                 </td>
-                                                <td>{formatDate(element.LastLoginDate)}</td>
-                                                <td style={{ minWidth: '140px' }}>
-                                                    <div style={{ textAlign: 'center' }}>
-                                                        <QRCode
-                                                            value={`http://localhost:3001/capture-user-ip/${element._id}`}
-                                                            size={100}
-                                                        />
-                                                        <div style={{
-                                                            fontSize: '11px',
-                                                            marginTop: '8px',
-                                                            color: '#495057',
-                                                            fontWeight: '500',
-                                                            lineHeight: '1.2'
-                                                        }}>
-                                                            Quét để lưu IP
-                                                        </div>
+                                                <td style={{ textAlign: 'center' }}>{formatDate(element.LastLoginDate)}</td>
+                                                <td style={{ minWidth: '140px', textAlign: 'center', verticalAlign: 'middle' }}>
+                                                    <QRCode
+                                                        value={`http://localhost:3001/capture-user-ip/${element._id}`}
+                                                        size={100}
+                                                    />
+                                                    <div style={{
+                                                        fontSize: '11px',
+                                                        marginTop: '8px',
+                                                        color: '#495057',
+                                                        fontWeight: '500',
+                                                        lineHeight: '1.2'
+                                                    }}>
+                                                        Quét để lưu IP
                                                     </div>
                                                 </td>
 
