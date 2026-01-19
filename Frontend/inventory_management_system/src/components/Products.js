@@ -1,10 +1,20 @@
 import React, { useEffect, useState } from 'react'
 import { NavLink } from 'react-router-dom'
 
+// Get network IP for QR codes (change this to your machine's IP)
+const NETWORK_IP = '192.168.0.104'; // Change this to your actual IP address
+const API_PORT = 3001;
+
 // QR Code component using online service - Read only for mobile scanning
 const QRCode = ({ value, size = 120 }) => {
+    // Convert localhost URLs to network IP for mobile scanning
+    let networkValue = value;
+    if (value.includes('localhost:3001')) {
+        networkValue = value.replace('localhost:3001', `${NETWORK_IP}:${API_PORT}`);
+    }
+
     // Encode URL for QR code
-    const encodedValue = encodeURIComponent(value);
+    const encodedValue = encodeURIComponent(networkValue);
     const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodedValue}`;
 
     return (
@@ -23,7 +33,7 @@ const QRCode = ({ value, size = 120 }) => {
                     opacity: '1',
                     filter: 'none'
                 }}
-                title={`📱 Chỉ quét từ camera điện thoại - không thể click trên web`}
+                title={`📱 Quét từ camera điện thoại (IP: ${NETWORK_IP})`}
                 draggable="false"
             />
             {/* Invisible overlay to prevent any interaction */}
@@ -37,6 +47,15 @@ const QRCode = ({ value, size = 120 }) => {
                 pointerEvents: 'none',
                 backgroundColor: 'transparent'
             }} />
+            {/* IP Address display */}
+            <div style={{
+                fontSize: '10px',
+                color: '#666',
+                marginTop: '5px',
+                textAlign: 'center'
+            }}>
+                IP: {NETWORK_IP}:{API_PORT}
+            </div>
         </div>
     );
 };
@@ -109,7 +128,8 @@ export default function Products() {
                     </button>
                 </div>
                 <div className="alert alert-info mb-3" style={{ fontSize: '14px' }}>
-                    <strong>Hướng dẫn quét QR:</strong> Chỉ sử dụng camera điện thoại để quét QR code và cập nhật ngày giao/nhận tự động. Không thể cập nhật trực tiếp từ web. Quy trình: Ngày giao → Ngày nhận → Hoàn thành.
+                    <strong>Hướng dẫn quét QR:</strong> Chỉ sử dụng camera điện thoại để quét QR code và cập nhật ngày giao/nhận tự động. Đảm bảo điện thoại cùng mạng với máy tính. Quy trình: Ngày giao → Ngày nhận → Hoàn thành.
+                    <br /><strong>Lưu ý:</strong> Nếu IP không đúng, hãy thay đổi NETWORK_IP trong code thành địa chỉ IP thực của máy bạn (ví dụ: 192.168.1.105).
                 </div>
                 <div className="overflow-auto mt-3" style={{ maxHeight: "40rem" }}>
                     <table className="table table-striped table-hover mt-3 fs-6" style={{ minWidth: '1200px' }}>

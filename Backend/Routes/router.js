@@ -144,6 +144,217 @@ router.put('/update-received/:id', async (req, res) => {
     }
 })
 
+// GET routes for QR code scanning (browsers make GET requests when scanning QR codes)
+router.get('/update-delivery/:id', async (req, res) => {
+    try {
+        const updateProducts = await products.findByIdAndUpdate(
+            req.params.id,
+            {
+                ProductDeliveryDate: new Date(),
+                ProductUpdatedDate: new Date()
+            },
+            { new: true }
+        );
+        console.log("Delivery date updated via QR scan");
+        res.status(200).send(`
+            <html>
+                <head>
+                    <title>Cập nhật ngày giao</title>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <style>
+                        body {
+                            font-family: Arial, sans-serif;
+                            text-align: center;
+                            padding: 50px;
+                            background-color: #f0f8ff;
+                        }
+                        .success {
+                            color: #28a745;
+                            font-size: 24px;
+                            margin-bottom: 20px;
+                        }
+                        .message {
+                            font-size: 18px;
+                            color: #333;
+                            margin-bottom: 30px;
+                        }
+                        .button {
+                            background-color: #007bff;
+                            color: white;
+                            padding: 12px 24px;
+                            text-decoration: none;
+                            border-radius: 5px;
+                            font-size: 16px;
+                            display: inline-block;
+                        }
+                        .button:hover {
+                            background-color: #0056b3;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="success">✅</div>
+                    <div class="message">Ngày giao đã được cập nhật thành công!</div>
+                    <a href="http://localhost:3000" class="button">Quay lại hệ thống</a>
+                </body>
+            </html>
+        `);
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).send(`
+            <html>
+                <head>
+                    <title>Lỗi cập nhật</title>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <style>
+                        body {
+                            font-family: Arial, sans-serif;
+                            text-align: center;
+                            padding: 50px;
+                            background-color: #ffebee;
+                        }
+                        .error {
+                            color: #dc3545;
+                            font-size: 24px;
+                            margin-bottom: 20px;
+                        }
+                        .message {
+                            font-size: 18px;
+                            color: #333;
+                            margin-bottom: 30px;
+                        }
+                        .button {
+                            background-color: #dc3545;
+                            color: white;
+                            padding: 12px 24px;
+                            text-decoration: none;
+                            border-radius: 5px;
+                            font-size: 16px;
+                            display: inline-block;
+                        }
+                        .button:hover {
+                            background-color: #c82333;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="error">❌</div>
+                    <div class="message">Có lỗi xảy ra khi cập nhật ngày giao. Vui lòng thử lại.</div>
+                    <a href="http://localhost:3000" class="button">Quay lại hệ thống</a>
+                </body>
+            </html>
+        `);
+    }
+})
+
+router.get('/update-received/:id', async (req, res) => {
+    try {
+        const updateProducts = await products.findByIdAndUpdate(
+            req.params.id,
+            {
+                ProductReceivedDate: new Date(),
+                ProductUpdatedDate: new Date()
+            },
+            { new: true }
+        );
+        console.log("Received date updated via QR scan");
+        res.status(200).send(`
+            <html>
+                <head>
+                    <title>Cập nhật ngày nhận</title>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <style>
+                        body {
+                            font-family: Arial, sans-serif;
+                            text-align: center;
+                            padding: 50px;
+                            background-color: #f0f8ff;
+                        }
+                        .success {
+                            color: #28a745;
+                            font-size: 24px;
+                            margin-bottom: 20px;
+                        }
+                        .message {
+                            font-size: 18px;
+                            color: #333;
+                            margin-bottom: 30px;
+                        }
+                        .button {
+                            background-color: #007bff;
+                            color: white;
+                            padding: 12px 24px;
+                            text-decoration: none;
+                            border-radius: 5px;
+                            font-size: 16px;
+                            display: inline-block;
+                        }
+                        .button:hover {
+                            background-color: #0056b3;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="success">✅</div>
+                    <div class="message">Ngày nhận đã được cập nhật thành công!</div>
+                    <a href="http://localhost:3000" class="button">Quay lại hệ thống</a>
+                </body>
+            </html>
+        `);
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).send(`
+            <html>
+                <head>
+                    <title>Lỗi cập nhật</title>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <style>
+                        body {
+                            font-family: Arial, sans-serif;
+                            text-align: center;
+                            padding: 50px;
+                            background-color: #ffebee;
+                        }
+                        .error {
+                            color: #dc3545;
+                            font-size: 24px;
+                            margin-bottom: 20px;
+                        }
+                        .message {
+                            font-size: 18px;
+                            color: #333;
+                            margin-bottom: 30px;
+                        }
+                        .button {
+                            background-color: #dc3545;
+                            color: white;
+                            padding: 12px 24px;
+                            text-decoration: none;
+                            border-radius: 5px;
+                            font-size: 16px;
+                            display: inline-block;
+                        }
+                        .button:hover {
+                            background-color: #c82333;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="error">❌</div>
+                    <div class="message">Có lỗi xảy ra khi cập nhật ngày nhận. Vui lòng thử lại.</div>
+                    <a href="http://localhost:3000" class="button">Quay lại hệ thống</a>
+                </body>
+            </html>
+        `);
+    }
+})
+
 router.get('/', async (req, res) => {
     res.status(201).json({
         name: "Phong Cho"
