@@ -4,6 +4,8 @@ import Navbar from './components/Navbar';
 import Products from './components/Products';
 import InsertProduct from './components/InsertProduct'
 import UpdateProduct from './components/UpdateProduct';
+import Users from './components/Users';
+import InsertUser from './components/InsertUser';
 import About from './components/About';
 
 import {
@@ -26,6 +28,8 @@ function App() {
           <Route path="/products" element={<Products />} />
           <Route path="/insertproduct" element={<InsertProduct />} />
           <Route path="/updateproduct/:id" element={<UpdateProduct />} />
+          <Route path="/users" element={<Users />} />
+          <Route path="/insertuser" element={<InsertUser />} />
           <Route path="/about" element={<About />} />
 
         </Routes>
