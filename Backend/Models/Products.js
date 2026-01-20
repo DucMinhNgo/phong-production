@@ -6,7 +6,7 @@ const ProductSchema = new mongoose.Schema(
             required: true,
         },
         ProductBarcode: {
-            type: Number,
+            type: String,
             required: true,
         },
         ProductCreatedDate: {
@@ -32,6 +32,14 @@ const ProductSchema = new mongoose.Schema(
         },
         ReceivedScannedBy: {
             type: String,
+            required: false,
+        },
+        ShippingQuantity: {
+            type: Number,
+            required: false,
+        },
+        ReceivedQuantity: {
+            type: Number,
             required: false,
         },
     });

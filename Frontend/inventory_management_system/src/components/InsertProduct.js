@@ -1,89 +1,86 @@
 import React, { useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom';
-import { API_BASE_URL } from '../config';
+import { API_BASE_URL, NETWORK_IP, API_PORT } from '../config';
+
+// QR Code component for product confirmation
+const ProductQRCode = ({ value, size = 150 }) => {
+    // Convert localhost URLs to network IP for mobile scanning
+    let networkValue = value;
+    if (value.includes('localhost:3001')) {
+        networkValue = value.replace('localhost:3001', `${NETWORK_IP}:${API_PORT}`);
+    }
+
+    // Encode URL for QR code
+    const encodedValue = encodeURIComponent(networkValue);
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodedValue}`;
+
+    return (
+        <div style={{ textAlign: 'center', position: 'relative', margin: '20px 0' }}>
+            <img
+                src={qrUrl}
+                alt="QR Code xác nhận sản phẩm"
+                style={{
+                    width: size,
+                    height: size,
+                    border: '3px solid #28a745',
+                    borderRadius: '8px',
+                    boxShadow: '0 4px 8px rgba(40,167,69,0.2)',
+                    userSelect: 'none',
+                    pointerEvents: 'none',
+                    opacity: '1',
+                    filter: 'none'
+                }}
+                title={`📱 Quét từ camera điện thoại để xác nhận (IP: ${NETWORK_IP})`}
+                draggable="false"
+            />
+            <div style={{
+                fontSize: '12px',
+                color: '#666',
+                marginTop: '10px',
+                textAlign: 'center'
+            }}>
+                IP: {NETWORK_IP}:{API_PORT}
+            </div>
+            <div style={{
+                fontSize: '14px',
+                color: '#28a745',
+                marginTop: '8px',
+                fontWeight: '500'
+            }}>
+                {value.includes('create-product-form') ? 'Quét QR để tạo sản phẩm mới' : 'Quét QR để xác nhận'}
+            </div>
+        </div>
+    );
+};
 
 export default function InsertProduct() {
-    const [productName, setProductName] = useState("");
-    const [productBarcode, setProductBarcode] = useState();
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState("");
-    const navigate = useNavigate("");
-
-    const setName = (e) => {
-        setProductName(e.target.value);
-    }
-
-    const setBarcode = (e) => {
-        const value = e.target.value.slice(0, 12);
-        setProductBarcode(value);
-    };
-
-    const addProduct = async (e) => {
-        e.preventDefault();
-
-        if (!productName || !productBarcode) {
-            setError("*Làm ơn nhập đầy đủ thông tin.");
-            return;
-        }
-
-        setLoading(true);
-        setError("");
-
-        try {
-            const res = await fetch(`${API_BASE_URL}/insertproduct`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ "ProductName": productName, "ProductBarcode": productBarcode })
-            });
-
-            await res.json();
-
-            if (res.status === 201) {
-                alert("Thêm sản phẩm thành công!");
-                setProductName("");
-                setProductBarcode("");
-                navigate('/products');
-            }
-            else if (res.status === 422) {
-                alert("Sản phẩm với số hiệu lố này đã tồn tại.");
-            }
-            else {
-                setError("Có lỗi xảy ra. Vui lòng thử lại.");
-            }
-        } catch (err) {
-            setError("Đã xảy ra lỗi. Vui lòng thử lại sau.");
-            console.log(err);
-        } finally {
-            setLoading(false);
-        }
-    }
 
     return (
         <div className='container-fluid p-5'>
-             <h1 className='text-center mb-5'>Enter Product Information</h1>
+            <h1 className='text-center mb-5'>Thêm mặt hàng mới</h1>
 
-            <div className="mt-4 row justify-content-center">
-                <div className="col-lg-5 col-md-5 col-12 fs-4 mb-4">
-                    <label htmlFor="product_name" className="form-label fw-bold">Tên hàng</label>
-                    <input type="text" onChange={setName} value={productName} className="form-control fs-5" id="product_name" placeholder="Nhập tên hàng" required />
+            <div className="text-center">
+                <div className="alert alert-info mb-4" style={{ fontSize: '16px', maxWidth: '600px', margin: '0 auto' }}>
+                    <strong>📱 Hướng dẫn tạo sản phẩm:</strong><br />
+                    1. Quét QR code bên dưới bằng camera điện thoại<br />
+                    2. Nhập thông tin sản phẩm trực tiếp từ điện thoại<br />
+                    3. Sản phẩm sẽ được tạo ngay lập tức
                 </div>
-                <div className="col-lg-5 col-md-5 col-12 fs-4 mb-4">
-                    <label htmlFor="product_barcode" className="form-label fw-bold">Số hiệu lố</label>
-                    <input type="number" onChange={setBarcode} value={productBarcode} maxLength={12} className="form-control fs-5" id="product_barcode" placeholder="Nhập số hiệu lố" required />
+
+                <ProductQRCode value={`${API_BASE_URL}/create-product-form`} size={200} />
+
+                <div style={{
+                    fontSize: '16px',
+                    color: '#007bff',
+                    marginTop: '20px',
+                    fontWeight: '500'
+                }}>
+                    📱 Quét từ camera điện thoại để tạo sản phẩm mới
                 </div>
             </div>
 
-            <div className='d-flex justify-content-center mt-4'>
-                <NavLink to="/products" className='btn btn-secondary me-4 fs-4 px-4 py-2'>Huỷ bỏ</NavLink>
-                <button type="submit" onClick={addProduct} className="btn btn-primary fs-4 px-4 py-2" disabled={loading}>
-                    {loading ? 'Đang thêm...' : 'Thêm'}
-                </button>
-            </div>
-
-            <div className="text-center mt-4">
-                {error && <div className="text-danger fs-5 fw-bold">{error}</div>}
+            <div className='d-flex justify-content-center mt-5'>
+                <NavLink to="/products" className='btn btn-secondary fs-4 px-4 py-2'>Quay lại danh sách</NavLink>
             </div>
         </div>
     )

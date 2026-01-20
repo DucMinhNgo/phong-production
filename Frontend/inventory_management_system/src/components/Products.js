@@ -62,6 +62,8 @@ export default function Products() {
 
     const [productData, setProductData] = useState([]);
     const [socket, setSocket] = useState(null);
+    const [receivingProduct, setReceivingProduct] = useState(null);
+    const [receivedQuantity, setReceivedQuantity] = useState("");
 
     useEffect(() => {
         getProducts();
@@ -147,15 +149,17 @@ export default function Products() {
                     <br /><strong>Lưu ý:</strong> Nếu IP không đúng, hãy thay đổi NETWORK_IP trong code thành địa chỉ IP thực của máy bạn (ví dụ: 192.168.1.105).
                 </div>
                 <div className="overflow-auto mt-3" style={{ maxHeight: "40rem" }}>
-                    <table className="table table-striped table-hover mt-3 fs-6" style={{ minWidth: '1400px' }}>
+                    <table className="table table-striped table-hover mt-3 fs-6" style={{ minWidth: '1800px' }}>
                         <thead>
                             <tr className="tr_color">
                                 <th scope="col" style={{ textAlign: 'center' }}>#</th>
                                 <th scope="col" style={{ textAlign: 'center' }}>Ngày tạo</th>
                                 <th scope="col" style={{ textAlign: 'center' }}>Tên hàng</th>
                                 <th scope="col" style={{ textAlign: 'center' }}>Số hiệu lố</th>
-                                <th scope="col" style={{ textAlign: 'center' }}>Ngày giao</th>
-                                <th scope="col" style={{ textAlign: 'center' }}>Ngày nhận</th>
+                                <th scope="col" style={{ textAlign: 'center' }}>Ngày giao/Số lượng giao</th>
+                                {/* <th scope="col" style={{ textAlign: 'center' }}>Số lượng giao</th> */}
+                                <th scope="col" style={{ textAlign: 'center' }}>Ngày nhận/Số lượng nhận</th>
+                                {/* <th scope="col" style={{ textAlign: 'center' }}>Số lượng nhận</th> */}
                                 <th scope="col" style={{ textAlign: 'center' }}>Ngày cập nhật</th>
                                 {/* <th scope="col">Người quét giao</th> */}
                                 {/* <th scope="col">Người quét nhận</th> */}
@@ -185,16 +189,16 @@ export default function Products() {
                                     // Determine QR code content
                                     const getQRContent = () => {
                                         if (!element.ProductDeliveryDate) {
-                                            // Show delivery QR if no delivery date
+                                            // Show delivery QR with quantity input if no delivery date
                                             return {
-                                                url: `${API_BASE_URL}/update-delivery/${element._id}`,
-                                                label: 'Quét để cập nhật ngày giao'
+                                                url: `${API_BASE_URL}/deliver-product/${element._id}`,
+                                                label: 'Quét để nhập số lượng giao'
                                             };
                                         } else if (!element.ProductReceivedDate) {
-                                            // Show received QR if delivery date exists but no received date
+                                            // Show received QR with quantity input if delivery date exists but no received date
                                             return {
-                                                url: `${API_BASE_URL}/update-received/${element._id}`,
-                                                label: 'Quét để cập nhật ngày nhận'
+                                                url: `${API_BASE_URL}/receive-product/${element._id}`,
+                                                label: 'Quét để nhập số lượng nhận'
                                             };
                                         }
                                         return null; // No QR needed
@@ -210,6 +214,7 @@ export default function Products() {
                                                 <td style={{ textAlign: 'center' }}>{element.ProductName}</td>
                                                 <td style={{ textAlign: 'center' }}>{element.ProductBarcode}</td>
                                                 <td style={{ textAlign: 'center' }}>
+                                                    <div>{element.ShippingQuantity || '-'}</div>
                                                     <div>{formatDate(element.ProductDeliveryDate)}</div>
                                                     <div style={{ fontSize: '12px', marginTop: '5px', maxWidth: '120px', margin: '5px auto 0' }}>
                                                     {element.DeliveryScannedBy ? (
@@ -221,7 +226,11 @@ export default function Products() {
                                                     )}
                                                     </div>
                                                 </td>
+                                                {/* <td style={{ textAlign: 'center' }}>
+                                                    {element.ShippingQuantity || '-'}
+                                                </td> */}
                                                 <td style={{ textAlign: 'center' }}>
+                                                    <div>{element.ReceivedQuantity || '-'}</div>
                                                     <div>{formatDate(element.ProductReceivedDate)}</div>
                                                     <div style={{ fontSize: '12px', marginTop: '5px', maxWidth: '120px', margin: '5px auto 0' }}>
                                                     {element.ReceivedScannedBy ? (
@@ -233,6 +242,9 @@ export default function Products() {
                                                     )}
                                                     </div>
                                                 </td>
+                                                {/* <td style={{ textAlign: 'center' }}>
+                                                    {element.ReceivedQuantity || '-'}
+                                                </td> */}
                                                 <td style={{ textAlign: 'center' }}>{formatDate(element.ProductUpdatedDate)}</td>
                                                 <td style={{ minWidth: '140px', textAlign: 'center', verticalAlign: 'middle' }}>
                                                     {qrContent ? (
