@@ -6,12 +6,12 @@
  * - REACT_APP_API_PORT: Port number of the backend server
  *
  * To set environment variables, create a .env file in the root directory:
- * REACT_APP_NETWORK_IP=192.168.0.104
+ * REACT_APP_NETWORK_IP=192.168.0.7
  * REACT_APP_API_PORT=3001
  */
 
 // Network configuration
-export const NETWORK_IP = process.env.REACT_APP_NETWORK_IP || '192.168.0.104';
+export const NETWORK_IP = process.env.REACT_APP_NETWORK_IP || '192.168.0.7';
 export const API_PORT = process.env.REACT_APP_API_PORT || 3001;
 
 // Derived URLs
