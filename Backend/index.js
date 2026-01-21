@@ -3,7 +3,7 @@ connectToMongo();
 
 const express = require('express')
 const app = express()
-const port = 3001
+const port = 3002
 
 const cors = require('cors')
 const http = require('http')

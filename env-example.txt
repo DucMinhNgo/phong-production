@@ -1,0 +1,14 @@
+# MongoDB Configuration
+
+# For Docker MongoDB (with authentication):
+MONGO_URI=mongodb://admin:password123@localhost:27017/IMS?authSource=admin
+
+# For Local MongoDB (without authentication):
+# MONGO_URI=mongodb://127.0.0.1:27017/IMS
+
+# Server Configuration
+PORT=3002
+NODE_ENV=development
+
+# JWT Secret (if needed in future)
+# JWT_SECRET=your-secret-key-here

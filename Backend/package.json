@@ -1,7 +1,7 @@
 {
   "name": "inventory_management_system_backend",
   "version": "1.0.0",
-  "proxy": "http://localhost:3001",
+  "proxy": "http://localhost:3002",
   "description": "Inventory Management System Backend",
   "main": "index.js",
   "scripts": {

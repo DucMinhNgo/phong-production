@@ -6,8 +6,8 @@ import { API_BASE_URL, NETWORK_IP, API_PORT } from '../config';
 const ProductQRCode = ({ value, size = 150 }) => {
     // Convert localhost URLs to network IP for mobile scanning
     let networkValue = value;
-    if (value.includes('localhost:3001')) {
-        networkValue = value.replace('localhost:3001', `${NETWORK_IP}:${API_PORT}`);
+    if (value.includes('localhost:3002')) {
+        networkValue = value.replace('localhost:3002', `${NETWORK_IP}:${API_PORT}`);
     }
 
     // Encode URL for QR code

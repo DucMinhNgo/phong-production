@@ -7,12 +7,12 @@
  *
  * To set environment variables, create a .env file in the root directory:
  * REACT_APP_NETWORK_IP=192.168.0.7
- * REACT_APP_API_PORT=3001
+ * REACT_APP_API_PORT=3002
  */
 
 // Network configuration
 export const NETWORK_IP = process.env.REACT_APP_NETWORK_IP || '192.168.0.7';
-export const API_PORT = process.env.REACT_APP_API_PORT || 3001;
+export const API_PORT = process.env.REACT_APP_API_PORT || 3002;
 
 // Derived URLs
 export const API_BASE_URL = `http://${NETWORK_IP}:${API_PORT}`;
