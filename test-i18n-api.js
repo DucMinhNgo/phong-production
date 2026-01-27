@@ -1,6 +1,6 @@
 const axios = require('axios');
 
-const API_BASE_URL = 'http://localhost:3002';
+const API_BASE_URL = process.env.API_BASE_URL || 'https://phong-production-backend.vercel.app';
 
 async function testAPI() {
   console.log('🧪 Testing i18n API functionality...\n');

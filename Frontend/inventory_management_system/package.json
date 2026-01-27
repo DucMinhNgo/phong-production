@@ -19,10 +19,22 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "start:local": "cp .env.local .env && react-scripts start",
+    "start:production": "cp .env.production .env && react-scripts start",
+    "start:dev": "cp .env.development .env && react-scripts start",
     "build": "react-scripts build",
+    "build:production": "cp .env.production .env && react-scripts build",
+    "build:local": "cp .env.local .env && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "update-ip": "node update-ip.js"
+    "update-ip": "node update-ip.js",
+    "env:production": "node switch-env.js production",
+    "env:local": "node switch-env.js local",
+    "env:development": "node switch-env.js development",
+    "serve": "npm run build:production && npx serve -s build -l 3000",
+    "serve:local": "npm run build:local && npx serve -s build -l 3000",
+    "production": "npm run serve",
+    "deploy:vercel": "npm run build:production && vercel --prod"
   },
   "eslintConfig": {
     "extends": [

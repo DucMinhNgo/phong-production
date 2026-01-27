@@ -47,6 +47,11 @@ module.exports = {
   },
 
   main: {
-    addNewProduct: 'addNewProduct'
+    addNewProduct: '新規商品登録'
+  },
+
+  form: {
+    productName: '製品名',
+    lotNumber: 'ロット番号'
   }
 };

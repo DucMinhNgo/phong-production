@@ -8,6 +8,7 @@ import UpdateProduct from './components/UpdateProduct';
 import Users from './components/Users';
 import InsertUser from './components/InsertUser';
 import About from './components/About';
+import ApiStatus from './components/ApiStatus';
 import { LanguageProvider } from './contexts/LanguageContext';
 
 import {
@@ -33,6 +34,7 @@ function AppContent() {
           <Route path="/insertuser" element={<InsertUser />} />
           {/* <Route path="/about" element={<About />} /> */}
         </Routes>
+        <ApiStatus />
       </Router>
     </div>
   );

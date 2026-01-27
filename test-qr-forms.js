@@ -1,7 +1,7 @@
 const axios = require('axios');
 const fs = require('fs');
 
-const API_BASE_URL = 'http://localhost:3002';
+const API_BASE_URL = process.env.API_BASE_URL || 'https://phong-production-backend.vercel.app';
 
 async function testQRForms() {
   console.log('🧪 Testing QR Forms with i18n...\n');

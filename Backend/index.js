@@ -11,7 +11,15 @@ const socketIo = require('socket.io')
 const router = require('./Routes/router')
 const { addTranslation } = require('./translations')
 
-app.use(cors());
+app.use(cors({
+  origin: [
+    "http://localhost:3000",
+    "http://localhost:3001", 
+    "https://phong-production-frontend.vercel.app",
+    /\.vercel\.app$/
+  ],
+  credentials: true
+}));
 app.use(express.json());
 app.use(addTranslation); // Add translation middleware
 app.use(router);
@@ -19,8 +27,14 @@ app.use(router);
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: "http://localhost:3000",
-    methods: ["GET", "POST"]
+    origin: [
+      "http://localhost:3000",
+      "http://localhost:3001",
+      "https://phong-production-frontend.vercel.app",
+      /\.vercel\.app$/
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true
   }
 });
 

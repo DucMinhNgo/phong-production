@@ -256,14 +256,14 @@ const translations = {
 
 #### Sử dụng curl:
 ```bash
-# Test với tiếng Việt
-curl -H "Accept-Language: vi" -H "X-Language: vi" http://localhost:3002/products
+# Production API - Test với tiếng Việt
+curl -H "X-Language: vi" https://phong-production-backend.vercel.app/products
 
-# Test với tiếng Nhật
-curl -H "Accept-Language: ja" -H "X-Language: ja" http://localhost:3002/products
+# Production API - Test với tiếng Nhật
+curl -H "X-Language: ja" https://phong-production-backend.vercel.app/products
 
-# Test fallback (ngôn ngữ không hỗ trợ)
-curl -H "X-Language: fr" http://localhost:3002/products
+# Local Development - Test với tiếng Việt
+curl -H "X-Language: vi" http://localhost:3002/products
 ```
 
 #### Sử dụng test script:

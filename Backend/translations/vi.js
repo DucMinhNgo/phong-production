@@ -47,11 +47,11 @@ module.exports = {
   },
 
   main: {
-    addNewProduct: 'Thêm sản phẩm'
+    addNewProduct: 'Thêm sản phẩm mới'
   },
 
   form: {
     productName: 'Tên sản phẩm',
-    lotNumber: 'Số lố'
+    lotNumber: 'Số hiệu lô'
   }
 };

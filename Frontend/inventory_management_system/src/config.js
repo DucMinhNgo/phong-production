@@ -1,19 +1,32 @@
-/**
- * Configuration file for Inventory Management System
- *
- * These values can be overridden by environment variables:
- * - REACT_APP_NETWORK_IP: IP address of the machine running the backend server
- * - REACT_APP_API_PORT: Port number of the backend server
- *
- * To set environment variables, create a .env file in the root directory:
- * REACT_APP_NETWORK_IP=192.168.0.100
- * REACT_APP_API_PORT=3002
- */
-
-// Network configuration
 export const NETWORK_IP = process.env.REACT_APP_NETWORK_IP || '192.168.0.100';
 export const API_PORT = process.env.REACT_APP_API_PORT || 3002;
 
-// Derived URLs
-export const API_BASE_URL = `http://${NETWORK_IP}:${API_PORT}`;
-export const WS_URL = `http://${NETWORK_IP}:${API_PORT}`;
+const USE_PRODUCTION = process.env.REACT_APP_USE_PRODUCTION === 'true';
+const USE_CUSTOM_URL = process.env.REACT_APP_USE_CUSTOM_URL === 'true';
+
+export const API_BASE_URL = (() => {
+  if (USE_CUSTOM_URL && process.env.REACT_APP_CUSTOM_API_URL) {
+    return process.env.REACT_APP_CUSTOM_API_URL;
+  }
+  if (USE_PRODUCTION) {
+    return 'https://phong-production-backend.vercel.app';
+  }
+  return `http://${NETWORK_IP}:${API_PORT}`;
+})();
+
+export const WS_URL = (() => {
+  if (USE_CUSTOM_URL && process.env.REACT_APP_CUSTOM_WS_URL) {
+    return process.env.REACT_APP_CUSTOM_WS_URL;
+  }
+  if (USE_PRODUCTION) {
+    return 'https://phong-production-backend.vercel.app';
+  }
+  return `http://${NETWORK_IP}:${API_PORT}`;
+})();
+
+console.log('Environment check:', {
+  USE_PRODUCTION_CONST: USE_PRODUCTION,
+  USE_PRODUCTION_ENV: process.env.REACT_APP_USE_PRODUCTION,
+  API_BASE_URL: API_BASE_URL,
+  ALL_ENV: process.env
+});
