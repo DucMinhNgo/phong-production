@@ -20,7 +20,7 @@ import {
 function App() {
   return (
     <div className="App">
-      <Navbar title="Phong Pro" about="About"></Navbar>
+      <Navbar title="Towa Industrial Vietnam Co. Ltd" about="About"></Navbar>
 
       <Router>
         <Routes>

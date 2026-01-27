@@ -149,7 +149,7 @@ export default function Users() {
                     <table className="table table-striped table-hover mt-3 fs-6" style={{ minWidth: '1000px' }}>
                         <thead>
                             <tr className="tr_color">
-                                <th scope="col" style={{ textAlign: 'center' }}>#</th>
+                                <th scope="col" style={{ textAlign: 'center' }}>STT</th>
                                 <th scope="col" style={{ textAlign: 'center' }}>Ngày tạo</th>
                                 <th scope="col" style={{ textAlign: 'center' }}>Tên người dùng</th>
                                 <th scope="col" style={{ textAlign: 'center' }}>Mã số nhân viên</th>
@@ -186,7 +186,7 @@ export default function Users() {
                                                 <td style={{ textAlign: 'center' }}>{element.UserName}</td>
                                                 <td style={{ textAlign: 'center' }}>{element.EmployeeCode}</td>
                                                 <td style={{ fontFamily: 'monospace', textAlign: 'center' }}>
-                                                    {element.DeviceIP || <span style={{ color: '#dc3545' }}>Chưa có IP</span>}
+                                                    {element.DeviceIP || <span style={{ color: '#d61e1e' }}>Chưa có IP</span>}
                                                 </td>
                                                 <td style={{ textAlign: 'center' }}>{formatDate(element.LastLoginDate)}</td>
                                                 <td style={{ minWidth: '140px', textAlign: 'center', verticalAlign: 'middle' }}>

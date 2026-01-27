@@ -57,7 +57,9 @@ export default function InsertProduct() {
 
     return (
         <div className='container-fluid p-5'>
-            <h1 className='text-center mb-5'>Thêm mặt hàng mới</h1>
+            <h1 className='text-center mb-5'>Thêm mặt hàng mới
+                <br />新規商品登録
+            </h1>
 
             <div className="text-center">
                 <div className="alert alert-info mb-4" style={{ fontSize: '16px', maxWidth: '600px', margin: '0 auto' }}>

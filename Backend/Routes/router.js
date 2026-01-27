@@ -179,7 +179,7 @@ router.get('/create-product-form', async (req, res) => {
                         font-family: Arial, sans-serif;
                         text-align: center;
                         padding: 20px;
-                        background-color: #f8f9fa;
+                        background-color: #eff4ef;
                         max-width: 400px;
                         margin: 0 auto;
                     }
@@ -235,7 +235,7 @@ router.get('/create-product-form', async (req, res) => {
                         cursor: not-allowed;
                     }
                     .success { color: #28a745; font-size: 20px; margin-bottom: 15px; }
-                    .error { color: #dc3545; font-size: 14px; margin-top: 10px; }
+                    .error { color: #e41c1c; font-size: 14px; margin-top: 10px; }
                 </style>
             </head>
             <body>
@@ -589,7 +589,7 @@ router.get('/receive-product/:id', async (req, res) => {
                             cursor: not-allowed;
                         }
                         .success { color: #28a745; font-size: 20px; margin-bottom: 15px; }
-                        .error { color: #dc3545; font-size: 14px; margin-top: 10px; }
+                        .error { color: #4335dc; font-size: 14px; margin-top: 10px; }
                     </style>
                 </head>
                 <body>
@@ -844,7 +844,7 @@ router.get('/update-delivery/:id', async (req, res) => {
                             margin-bottom: 30px;
                         }
                         .button {
-                            background-color: #dc3545;
+                            background-color: #cc224a;
                             color: white;
                             padding: 12px 24px;
                             text-decoration: none;
@@ -1387,7 +1387,7 @@ router.get('/capture-user-ip/:id', async (req, res) => {
 
 router.get('/', async (req, res) => {
     res.status(201).json({
-        name: "Phong Cho"
+        name: "Phong"
     });
 })
 

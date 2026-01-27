@@ -135,10 +135,14 @@ export default function Products() {
 
 
             <div className='container-fluid p-5'>
-                <h1>Danh sách mặt hàng</h1>
+                <h1 className="main-title" style={{ textAlign: 'center' }}>
+  NHẬT KÍ ĐI ĐÁNH BÓNG + NHIỆT LUYỆN
+  <br />
+  研磨 + 熱処理 日誌
+</h1>
                 <div className='d-flex justify-content-between align-items-center mb-3'>
                     <div className='add_button'>
-                        <NavLink to="/insertproduct" className='btn btn-primary fs-5'> + Thêm mặt hàng mới</NavLink>
+                        <NavLink to="/insertproduct" className='btn btn-primary fs-5'> + Thêm mặt hàng mới<br />新規商品登録</NavLink>
                     </div>
                     <button onClick={getProducts} className='btn btn-outline-secondary fs-6' title="Làm mới dữ liệu">
                         🔄 Làm mới
@@ -152,18 +156,18 @@ export default function Products() {
                     <table className="table table-striped table-hover mt-3 fs-6" style={{ minWidth: '1800px' }}>
                         <thead>
                             <tr className="tr_color">
-                                <th scope="col" style={{ textAlign: 'center' }}>#</th>
-                                <th scope="col" style={{ textAlign: 'center' }}>Ngày tạo</th>
-                                <th scope="col" style={{ textAlign: 'center' }}>Tên hàng</th>
-                                <th scope="col" style={{ textAlign: 'center' }}>Số hiệu lố</th>
-                                <th scope="col" style={{ textAlign: 'center' }}>Ngày giao/Số lượng giao</th>
-                                {/* <th scope="col" style={{ textAlign: 'center' }}>Số lượng giao</th> */}
-                                <th scope="col" style={{ textAlign: 'center' }}>Ngày nhận/Số lượng nhận</th>
+                                <th scope="col" style={{ textAlign: 'center' }}>STT<br />工順</th>
+                                <th scope="col" style={{ textAlign: 'center' }}>Ngày tạo<br />作成日</th>
+                                                <th scope="col" style={{ textAlign: 'center' }}>Tên hàng<br />品名</th>
+                                <th scope="col" style={{ textAlign: 'center' }}>Số hiệu lố<br />ロットNo.</th>
+                                <th scope="col" style={{ textAlign: 'center' }}>Ngày giao đánh bóng / Số lượng giao<br />研磨出荷日 / 発送数量</th>
+                                {/* <th scope="col" style={{ textAlign: 'center' }}>Số lượng giao</th> */} 
+                                <th scope="col" style={{ textAlign: 'center' }}> Ngày nhận đánh bóng / Số lượng nhận<br />研磨受入日 / 返却数量</th>
                                 {/* <th scope="col" style={{ textAlign: 'center' }}>Số lượng nhận</th> */}
-                                <th scope="col" style={{ textAlign: 'center' }}>Ngày cập nhật</th>
+                                <th scope="col" style={{ textAlign: 'center' }}>Ngày cập nhật<br />更新日</th>
                                 {/* <th scope="col">Người quét giao</th> */}
                                 {/* <th scope="col">Người quét nhận</th> */}
-                                <th scope="col" style={{ textAlign: 'center' }}>QR Code</th>
+                                <th scope="col" style={{ textAlign: 'center' }}>QR Code<br />QR コード</th>
                                 {/* <th scope="col">Update</th>
                                 <th scope="col">Delete</th> */}
                             </tr>
@@ -192,13 +196,13 @@ export default function Products() {
                                             // Show delivery QR with quantity input if no delivery date
                                             return {
                                                 url: `${API_BASE_URL}/deliver-product/${element._id}`,
-                                                label: 'Quét để nhập số lượng giao'
+                                                label: 'Quét mã để nhập số lượng giao'
                                             };
                                         } else if (!element.ProductReceivedDate) {
                                             // Show received QR with quantity input if delivery date exists but no received date
                                             return {
                                                 url: `${API_BASE_URL}/receive-product/${element._id}`,
-                                                label: 'Quét để nhập số lượng nhận'
+                                                label: 'Quét mã để nhập số lượng nhận'
                                             };
                                         }
                                         return null; // No QR needed
@@ -234,7 +238,7 @@ export default function Products() {
                                                     <div>{formatDate(element.ProductReceivedDate)}</div>
                                                     <div style={{ fontSize: '12px', marginTop: '5px', maxWidth: '120px', margin: '5px auto 0' }}>
                                                     {element.ReceivedScannedBy ? (
-                                                        <span style={{ color: '#007bff', fontWeight: '500' }}>
+                                                        <span style={{ color: '#0737e3', fontWeight: '500' }}>
                                                             {element.ReceivedScannedBy}
                                                         </span>
                                                     ) : (
