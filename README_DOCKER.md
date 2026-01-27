@@ -1,6 +1,7 @@
 # Inventory Management System - Docker Setup (Alternative)
 
-> **Note**: This is an alternative setup. For local MongoDB installation, see [README.md](README.md)
+> **Note**: This is an alternative setup. For local MongoDB installation, see
+> [README.md](README.md)
 
 ## Prerequisites
 

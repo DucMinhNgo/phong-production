@@ -7,7 +7,7 @@
 Trong thư mục `Frontend/inventory_management_system/`, tạo file `.env`:
 
 ```env
-REACT_APP_NETWORK_IP=192.168.0.7
+REACT_APP_NETWORK_IP=192.168.0.100
 REACT_APP_API_PORT=3002
 ```
 
@@ -30,7 +30,7 @@ cp env-example.txt .env
 
 **Máy tính cá nhân:**
 ```env
-REACT_APP_NETWORK_IP=192.168.0.7
+REACT_APP_NETWORK_IP=192.168.0.100
 REACT_APP_API_PORT=3002
 ```
 

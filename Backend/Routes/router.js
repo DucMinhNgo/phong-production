@@ -2,8 +2,8 @@ const express = require('express');
 const router = express.Router();
 const products = require('../Models/Products');
 const users = require('../Models/User');
+const { generateHTML } = require('../utils/htmlTemplates');
 
-//Inserting(Creating) Data:
 router.post("/insertproduct", async (req, res) => {
     const { ProductName, ProductBarcode } = req.body;
 
@@ -12,7 +12,7 @@ router.post("/insertproduct", async (req, res) => {
         console.log(pre);
 
         if (pre) {
-            res.status(422).json("Product is already added.")
+            res.status(422).json({ message: req.t('error.duplicateEntry') })
         }
         else {
             const addProduct = new products({
@@ -23,7 +23,7 @@ router.post("/insertproduct", async (req, res) => {
             })
 
             await addProduct.save();
-            res.status(201).json(addProduct)
+            res.status(201).json({ message: req.t('success.productCreated'), data: addProduct })
             console.log(addProduct)
         }
     }
@@ -32,9 +32,7 @@ router.post("/insertproduct", async (req, res) => {
     }
 })
 
-//Getting(Reading) Data:
 router.get('/products', async (req, res) => {
-
     try {
         const { sortBy, order } = req.query;
 
@@ -48,15 +46,24 @@ router.get('/products', async (req, res) => {
         }
 
         const getProducts = await products.find({}).sort(sortOptions);
-        console.log(getProducts);
-        res.status(201).json(getProducts);
+        console.log(`${req.t('success.dataRetrieved')} (${req.language})`);
+        
+        res.status(201).json({
+            message: req.t('success.dataRetrieved'),
+            data: getProducts,
+            language: req.language
+        });
     }
     catch (err) {
         console.log(err);
+        res.status(500).json({
+            message: req.t('error.serverError'),
+            error: err.message,
+            language: req.language
+        });
     }
 })
 
-//Getting(Reading) individual Data:
 router.get('/products/:id', async (req, res) => {
 
     try {
@@ -69,7 +76,6 @@ router.get('/products/:id', async (req, res) => {
     }
 })
 
-//Editing(Updating) Data:
 router.put('/updateproduct/:id', async (req, res) => {
     const { ProductName, ProductBarcode, ProductDeliveryDate, ProductReceivedDate } = req.body;
 
@@ -97,21 +103,20 @@ router.put('/updateproduct/:id', async (req, res) => {
         }
 
         const updateProducts = await products.findByIdAndUpdate(req.params.id, updateData, { new: true });
-        console.log("Data Updated");
-        res.status(201).json(updateProducts);
+        console.log(req.t('success.productUpdated'));
+        res.status(201).json({ message: req.t('success.productUpdated'), data: updateProducts });
     }
     catch (err) {
         console.log(err);
     }
 })
 
-//Deleting Data:
 router.delete('/deleteproduct/:id', async (req, res) => {
 
     try {
         const deleteProduct = await products.findByIdAndDelete(req.params.id);
-        console.log("Data Deleted");
-        res.status(201).json(deleteProduct);
+        console.log(req.t('success.productDeleted'));
+        res.status(201).json({ message: req.t('success.productDeleted'), data: deleteProduct });
     }
     catch (err) {
         console.log(err);
@@ -166,158 +171,19 @@ router.put('/update-delivery/:id', async (req, res) => {
     }
 })
 
-// Mobile form for creating new products
 router.get('/create-product-form', async (req, res) => {
-    res.status(200).send(`
-        <html>
-            <head>
-                <title>Tạo sản phẩm mới</title>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <style>
-                    body {
-                        font-family: Arial, sans-serif;
-                        text-align: center;
-                        padding: 20px;
-                        background-color: #eff4ef;
-                        max-width: 400px;
-                        margin: 0 auto;
-                    }
-                    .container {
-                        background: white;
-                        padding: 30px;
-                        border-radius: 10px;
-                        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-                    }
-                    .logo {
-                        color: #007bff;
-                        font-size: 24px;
-                        margin-bottom: 20px;
-                    }
-                    .form-group {
-                        margin-bottom: 20px;
-                        text-align: left;
-                    }
-                    label {
-                        display: block;
-                        margin-bottom: 8px;
-                        font-weight: bold;
-                        color: #333;
-                    }
-                    input {
-                        width: 100%;
-                        padding: 12px;
-                        border: 2px solid #ddd;
-                        border-radius: 5px;
-                        font-size: 16px;
-                        box-sizing: border-box;
-                    }
-                    input:focus {
-                        border-color: #007bff;
-                        outline: none;
-                    }
-                    .button {
-                        background-color: #007bff;
-                        color: white;
-                        padding: 12px 24px;
-                        border: none;
-                        border-radius: 5px;
-                        font-size: 16px;
-                        cursor: pointer;
-                        width: 100%;
-                        margin-top: 10px;
-                    }
-                    .button:hover {
-                        background-color: #0056b3;
-                    }
-                    .button:disabled {
-                        background-color: #ccc;
-                        cursor: not-allowed;
-                    }
-                    .success { color: #28a745; font-size: 20px; margin-bottom: 15px; }
-                    .error { color: #e41c1c; font-size: 14px; margin-top: 10px; }
-                </style>
-            </head>
-            <body>
-                <div class="container">
-                    <div class="logo">📦</div>
-                    <h2>Tạo sản phẩm mới</h2>
-                    <form id="createProductForm">
-                        <div class="form-group">
-                            <label for="productName">Tên hàng:</label>
-                            <input type="text" id="productName" name="productName" required placeholder="Nhập tên hàng">
-                        </div>
-                        <div class="form-group">
-                            <label for="productBarcode">Số hiệu lố:</label>
-                            <input type="text" id="productBarcode" name="productBarcode" required placeholder="Nhập số hiệu lố" maxlength="20">
-                        </div>
-                        <button type="submit" class="button" id="submitBtn">Tạo sản phẩm</button>
-                    </form>
-                    <div id="message"></div>
-                </div>
-
-                <script>
-                    const form = document.getElementById('createProductForm');
-                    const submitBtn = document.getElementById('submitBtn');
-                    const messageDiv = document.getElementById('message');
-
-                    form.addEventListener('submit', async (e) => {
-                        e.preventDefault();
-                        const productName = document.getElementById('productName').value.trim();
-                        const productBarcode = document.getElementById('productBarcode').value.trim();
-
-                        if (!productName || !productBarcode) {
-                            messageDiv.innerHTML = '<div class="error">Vui lòng nhập đầy đủ thông tin.</div>';
-                            return;
-                        }
-
-                        if (productBarcode.length > 20) {
-                            messageDiv.innerHTML = '<div class="error">Số hiệu lố không được quá 20 ký tự.</div>';
-                            return;
-                        }
-
-                        submitBtn.disabled = true;
-                        submitBtn.textContent = 'Đang tạo...';
-
-                        try {
-                            const response = await fetch('/insertproduct', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                },
-                                body: JSON.stringify({
-                                    ProductName: productName,
-                                    ProductBarcode: productBarcode
-                                })
-                            });
-
-                            const data = await response.json();
-
-                            if (response.status === 201) {
-                                messageDiv.innerHTML = '<div style="color: #28a745; font-size: 16px; margin-top: 15px;">✅ Sản phẩm đã được tạo thành công!</div>';
-                                form.reset();
-                                setTimeout(() => {
-                                    window.close();
-                                }, 2000);
-                            } else if (response.status === 422) {
-                                messageDiv.innerHTML = '<div class="error">Sản phẩm với số hiệu lố này đã tồn tại.</div>';
-                            } else {
-                                messageDiv.innerHTML = '<div class="error">Có lỗi xảy ra. Vui lòng thử lại.</div>';
-                            }
-                        } catch (error) {
-                            messageDiv.innerHTML = '<div class="error">Có lỗi xảy ra. Vui lòng thử lại.</div>';
-                        } finally {
-                            submitBtn.disabled = false;
-                            submitBtn.textContent = 'Tạo sản phẩm';
-                        }
-                    });
-                </script>
-            </body>
-        </html>
-    `);
+    try {
+        const html = generateHTML(req.language, 'createProductForm', {});
+        res.status(200).send(html);
+    } catch (error) {
+        console.error('Error generating create product form:', error);
+        const errorHtml = generateHTML(req.language, 'errorPage', {
+            message: req.t('error.serverError')
+        });
+        res.status(500).send(errorHtml);
+    }
 });
 
-// Deliver product with quantity input via QR scan
 router.get('/deliver-product/:id', async (req, res) => {
     try {
         const product = await products.findById(req.params.id);
@@ -325,7 +191,7 @@ router.get('/deliver-product/:id', async (req, res) => {
             return res.status(404).send(`
                 <html>
                     <head>
-                        <title>Sản phẩm không tồn tại</title>
+                        <title>${req.t('error.productNotFound')}</title>
                         <meta charset="UTF-8">
                         <meta name="viewport" content="width=device-width, initial-scale=1.0">
                         <style>
@@ -336,342 +202,54 @@ router.get('/deliver-product/:id', async (req, res) => {
                     </head>
                     <body>
                         <div class="error">❌</div>
-                        <div class="message">Sản phẩm không tồn tại.</div>
+                        <div class="message">${req.t('error.productNotFound')}</div>
                     </body>
                 </html>
             `);
         }
 
-        res.status(200).send(`
-            <html>
-                <head>
-                    <title>Nhập số lượng giao - ${product.ProductName}</title>
-                    <meta charset="UTF-8">
-                    <meta name="viewport" content="width=device-width, initial-scale="1.0">
-                    <style>
-                        body {
-                            font-family: Arial, sans-serif;
-                            text-align: center;
-                            padding: 20px;
-                            background-color: #f8f9fa;
-                            max-width: 400px;
-                            margin: 0 auto;
-                        }
-                        .container {
-                            background: white;
-                            padding: 30px;
-                            border-radius: 10px;
-                            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-                        }
-                        .product-info {
-                            background-color: #e9ecef;
-                            padding: 15px;
-                            border-radius: 5px;
-                            margin-bottom: 20px;
-                            font-size: 14px;
-                        }
-                        .form-group {
-                            margin-bottom: 20px;
-                            text-align: left;
-                        }
-                        label {
-                            display: block;
-                            margin-bottom: 8px;
-                            font-weight: bold;
-                            color: #333;
-                        }
-                        input {
-                            width: 100%;
-                            padding: 12px;
-                            border: 2px solid #ddd;
-                            border-radius: 5px;
-                            font-size: 16px;
-                            box-sizing: border-box;
-                        }
-                        input:focus {
-                            border-color: #007bff;
-                            outline: none;
-                        }
-                        .button {
-                            background-color: #007bff;
-                            color: white;
-                            padding: 12px 24px;
-                            border: none;
-                            border-radius: 5px;
-                            font-size: 16px;
-                            cursor: pointer;
-                            width: 100%;
-                            margin-top: 10px;
-                        }
-                        .button:hover {
-                            background-color: #0056b3;
-                        }
-                        .button:disabled {
-                            background-color: #ccc;
-                            cursor: not-allowed;
-                        }
-                        .success { color: #28a745; font-size: 20px; margin-bottom: 15px; }
-                        .error { color: #dc3545; font-size: 14px; margin-top: 10px; }
-                    </style>
-                </head>
-                <body>
-                    <div class="container">
-                        <div class="success">🚛</div>
-                        <h2>Nhập số lượng giao</h2>
-                        <div class="product-info">
-                            <strong>${product.ProductName}</strong><br>
-                            Số hiệu lố: ${product.ProductBarcode}
-                        </div>
-                        <form id="deliverForm">
-                            <div class="form-group">
-                                <label for="quantity">Số lượng giao:</label>
-                                <input type="number" id="quantity" name="quantity" min="0" required placeholder="Nhập số lượng giao">
-                            </div>
-                            <button type="submit" class="button" id="submitBtn">Xác nhận giao hàng</button>
-                        </form>
-                        <div id="message"></div>
-                    </div>
-
-                    <script>
-                        const form = document.getElementById('deliverForm');
-                        const submitBtn = document.getElementById('submitBtn');
-                        const messageDiv = document.getElementById('message');
-
-                        form.addEventListener('submit', async (e) => {
-                            e.preventDefault();
-                            const quantity = document.getElementById('quantity').value;
-
-                            if (!quantity || quantity < 0) {
-                                messageDiv.innerHTML = '<div class="error">Vui lòng nhập số lượng hợp lệ.</div>';
-                                return;
-                            }
-
-                            submitBtn.disabled = true;
-                            submitBtn.textContent = 'Đang xử lý...';
-
-                            try {
-                                const response = await fetch('/update-delivery/${req.params.id}?quantity=' + quantity, {
-                                    method: 'GET'
-                                });
-
-                                if (response.ok) {
-                                    messageDiv.innerHTML = '<div style="color: #28a745; font-size: 16px; margin-top: 15px;">✅ Đã cập nhật thành công!</div>';
-                                    setTimeout(() => {
-                                        window.close();
-                                    }, 2000);
-                                } else {
-                                    throw new Error('Cập nhật thất bại');
-                                }
-                            } catch (error) {
-                                messageDiv.innerHTML = '<div class="error">Có lỗi xảy ra. Vui lòng thử lại.</div>';
-                                submitBtn.disabled = false;
-                                submitBtn.textContent = 'Xác nhận giao hàng';
-                            }
-                        });
-                    </script>
-                </body>
-            </html>
-        `);
+        const html = generateHTML(req.language, 'deliveryForm', {
+            productName: product.ProductName,
+            productBarcode: product.ProductBarcode,
+            productId: req.params.id
+        });
+        
+        res.status(200).send(html);
     }
     catch (err) {
         console.log(err);
-        res.status(500).send(`
-            <html>
-                <head>
-                    <title>Lỗi</title>
-                    <meta charset="UTF-8">
-                    <meta name="viewport" content="width=device-width, initial-scale="1.0">
-                    <style>
-                        body { font-family: Arial, sans-serif; text-align: center; padding: 50px; background-color: #ffebee; }
-                        .error { color: #dc3545; font-size: 24px; margin-bottom: 20px; }
-                        .message { font-size: 18px; color: #333; margin-bottom: 30px; }
-                    </style>
-                </head>
-                <body>
-                    <div class="error">❌</div>
-                    <div class="message">Có lỗi xảy ra khi tải trang nhập số lượng giao.</div>
-                </body>
-            </html>
-        `);
+        const errorHtml = generateHTML(req.language, 'errorPage', {
+            message: req.t('error.serverError')
+        });
+        res.status(500).send(errorHtml);
     }
 });
 
-// Receive product with quantity input via QR scan
 router.get('/receive-product/:id', async (req, res) => {
     try {
         const product = await products.findById(req.params.id);
         if (!product) {
-            return res.status(404).send(`
-                <html>
-                    <head>
-                        <title>Sản phẩm không tồn tại</title>
-                        <meta charset="UTF-8">
-                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                        <style>
-                            body { font-family: Arial, sans-serif; text-align: center; padding: 50px; background-color: #ffebee; }
-                            .error { color: #dc3545; font-size: 24px; margin-bottom: 20px; }
-                            .message { font-size: 18px; color: #333; margin-bottom: 30px; }
-                        </style>
-                    </head>
-                    <body>
-                        <div class="error">❌</div>
-                        <div class="message">Sản phẩm không tồn tại.</div>
-                    </body>
-                </html>
-            `);
+            const errorHtml = generateHTML(req.language, 'errorPage', {
+                message: req.t('error.productNotFound')
+            });
+            return res.status(404).send(errorHtml);
         }
 
-        res.status(200).send(`
-            <html>
-                <head>
-                    <title>Nhập số lượng nhận - ${product.ProductName}</title>
-                    <meta charset="UTF-8">
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <style>
-                        body {
-                            font-family: Arial, sans-serif;
-                            text-align: center;
-                            padding: 20px;
-                            background-color: #f0f8ff;
-                            max-width: 400px;
-                            margin: 0 auto;
-                        }
-                        .container {
-                            background: white;
-                            padding: 30px;
-                            border-radius: 10px;
-                            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-                        }
-                        .product-info {
-                            background-color: #e9ecef;
-                            padding: 15px;
-                            border-radius: 5px;
-                            margin-bottom: 20px;
-                            font-size: 14px;
-                        }
-                        .form-group {
-                            margin-bottom: 20px;
-                        }
-                        label {
-                            display: block;
-                            margin-bottom: 8px;
-                            font-weight: bold;
-                            color: #333;
-                        }
-                        input {
-                            width: 100%;
-                            padding: 12px;
-                            border: 2px solid #ddd;
-                            border-radius: 5px;
-                            font-size: 16px;
-                            box-sizing: border-box;
-                        }
-                        input:focus {
-                            border-color: #007bff;
-                            outline: none;
-                        }
-                        .button {
-                            background-color: #007bff;
-                            color: white;
-                            padding: 12px 24px;
-                            border: none;
-                            border-radius: 5px;
-                            font-size: 16px;
-                            cursor: pointer;
-                            width: 100%;
-                            margin-top: 10px;
-                        }
-                        .button:hover {
-                            background-color: #0056b3;
-                        }
-                        .button:disabled {
-                            background-color: #ccc;
-                            cursor: not-allowed;
-                        }
-                        .success { color: #28a745; font-size: 20px; margin-bottom: 15px; }
-                        .error { color: #4335dc; font-size: 14px; margin-top: 10px; }
-                    </style>
-                </head>
-                <body>
-                    <div class="container">
-                        <div class="success">📦</div>
-                        <h2>Nhập số lượng nhận</h2>
-                        <div class="product-info">
-                            <strong>${product.ProductName}</strong><br>
-                            Số hiệu lố: ${product.ProductBarcode}<br>
-                            Số lượng giao: ${product.ShippingQuantity || 'Chưa nhập'}
-                        </div>
-                        <form id="receiveForm">
-                            <div class="form-group">
-                                <label for="quantity">Số lượng nhận:</label>
-                                <input type="number" id="quantity" name="quantity" min="0" required placeholder="Nhập số lượng nhận">
-                            </div>
-                            <button type="submit" class="button" id="submitBtn">Xác nhận nhận hàng</button>
-                        </form>
-                        <div id="message"></div>
-                    </div>
-
-                    <script>
-                        const form = document.getElementById('receiveForm');
-                        const submitBtn = document.getElementById('submitBtn');
-                        const messageDiv = document.getElementById('message');
-
-                        form.addEventListener('submit', async (e) => {
-                            e.preventDefault();
-                            const quantity = document.getElementById('quantity').value;
-
-                            if (!quantity || quantity < 0) {
-                                messageDiv.innerHTML = '<div class="error">Vui lòng nhập số lượng hợp lệ.</div>';
-                                return;
-                            }
-
-                            submitBtn.disabled = true;
-                            submitBtn.textContent = 'Đang xử lý...';
-
-                            try {
-                                const response = await fetch(window.location.origin + '/update-received/${req.params.id}?quantity=' + quantity, {
-                                    method: 'GET'
-                                });
-
-                                if (response.ok) {
-                                    messageDiv.innerHTML = '<div style="color: #28a745; font-size: 16px; margin-top: 15px;">✅ Đã cập nhật thành công!</div>';
-                                    setTimeout(() => {
-                                        window.close();
-                                    }, 2000);
-                                } else {
-                                    throw new Error('Cập nhật thất bại');
-                                }
-                            } catch (error) {
-                                messageDiv.innerHTML = '<div class="error">Có lỗi xảy ra. Vui lòng thử lại.</div>';
-                                submitBtn.disabled = false;
-                                submitBtn.textContent = 'Xác nhận nhận hàng';
-                            }
-                        });
-                    </script>
-                </body>
-            </html>
-        `);
+        const html = generateHTML(req.language, 'receiveForm', {
+            productName: product.ProductName,
+            productBarcode: product.ProductBarcode,
+            shippingQuantity: product.ShippingQuantity,
+            productId: req.params.id
+        });
+        
+        res.status(200).send(html);
     }
     catch (err) {
         console.log(err);
-        res.status(500).send(`
-            <html>
-                <head>
-                    <title>Lỗi</title>
-                    <meta charset="UTF-8">
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <style>
-                        body { font-family: Arial, sans-serif; text-align: center; padding: 50px; background-color: #ffebee; }
-                        .error { color: #dc3545; font-size: 24px; margin-bottom: 20px; }
-                        .message { font-size: 18px; color: #333; margin-bottom: 30px; }
-                    </style>
-                </head>
-                <body>
-                    <div class="error">❌</div>
-                    <div class="message">Có lỗi xảy ra khi tải trang nhập số lượng.</div>
-                </body>
-            </html>
-        `);
+        const errorHtml = generateHTML(req.language, 'errorPage', {
+            message: req.t('error.serverError')
+        });
+        res.status(500).send(errorHtml);
     }
 });
 
@@ -1008,9 +586,6 @@ router.get('/update-received/:id', async (req, res) => {
     }
 })
 
-// User Routes
-
-//Inserting(Creating) User:
 router.post("/insertuser", async (req, res) => {
     const { UserName, EmployeeCode, DeviceIP } = req.body;
 
@@ -1045,7 +620,6 @@ router.post("/insertuser", async (req, res) => {
     }
 })
 
-//Getting(Reading) Users:
 router.get('/users', async (req, res) => {
 
     try {
@@ -1069,7 +643,6 @@ router.get('/users', async (req, res) => {
     }
 })
 
-//Getting(Reading) individual User:
 router.get('/users/:id', async (req, res) => {
 
     try {
@@ -1082,7 +655,6 @@ router.get('/users/:id', async (req, res) => {
     }
 })
 
-//Editing(Updating) User:
 router.put('/updateuser/:id', async (req, res) => {
     const { UserName, EmployeeCode, DeviceIP } = req.body;
 
@@ -1132,7 +704,6 @@ router.put('/updateuser/:id', async (req, res) => {
     }
 })
 
-//Deleting User:
 router.delete('/deleteuser/:id', async (req, res) => {
 
     try {

@@ -2,6 +2,11 @@ import React, { useEffect, useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import io from 'socket.io-client'
 import { NETWORK_IP, API_PORT, API_BASE_URL, WS_URL } from '../config'
+import { useLanguage } from '../contexts/LanguageContext'
+import { useDocumentTitle } from '../hooks/useDocumentTitle'
+import { useNotification } from '../hooks/useNotification'
+import api from '../utils/api'
+import Notification from './Notification'
 
 // QR Code component using online service - Read only for mobile scanning
 const QRCode = ({ value, size = 120 }) => {
@@ -59,6 +64,9 @@ const QRCode = ({ value, size = 120 }) => {
 };
 
 export default function Products() {
+    const { t, currentLanguage } = useLanguage();
+    const { notification, showNotification, hideNotification } = useNotification();
+    useDocumentTitle('nav.products', 'Sản phẩm');
 
     const [productData, setProductData] = useState([]);
     const [socket, setSocket] = useState(null);
@@ -79,97 +87,98 @@ export default function Products() {
             getProducts();
         });
 
+        // Listen for language changes to refresh data
+        const handleLanguageChange = () => {
+            getProducts();
+        };
+
+        window.addEventListener('languageChanged', handleLanguageChange);
+
         // Cleanup on unmount
         return () => {
             newSocket.disconnect();
+            window.removeEventListener('languageChanged', handleLanguageChange);
         };
     }, []);
 
     const getProducts = async (e) => {
-
         try {
-            const res = await fetch(`${API_BASE_URL}/products`, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            });
+            const response = await api.get('/products');
 
-            const data = await res.json();
-
-            if (res.status === 201) {
-                console.log("Data Retrieved.");
+            if (response.status === 201) {
+                // Handle both old format (direct array) and new format (with message)
+                const data = response.data.data || response.data;
                 setProductData(data);
-            }
-            else {
-                console.log("Something went wrong. Please try again.");
+
+                // Show backend success message if available
+                if (response.data.message) {
+                    showNotification(response.data.message, 'success');
+                }
             }
         } catch (err) {
-            console.log(err);
+            console.error('Error fetching products:', err);
+
+            // Show backend error message if available, otherwise show generic message
+            const errorMessage = err.response?.data?.message || t('messages.somethingWentWrong');
+            showNotification(errorMessage, 'error');
         }
     }
 
     const deleteProduct = async (id) => {
-
-        const response = await fetch(`${API_BASE_URL}/deleteproduct/${id}`, {
-            method: "DELETE",
-            headers: {
-                "Content-Type": "application/json"
-            }
-        });
-
-        const deletedata = await response.json();
-        console.log(deletedata);
-
-        if (response.status === 422 || !deletedata) {
-            console.log("Error");
-        } else {
-            console.log("Product deleted");
+        try {
+            const response = await api.delete(`/deleteproduct/${id}`);
+            
+            // Show backend success message if available
+            const successMessage = response.data.message || t('messages.productDeleted');
+            showNotification(successMessage, 'success');
+            
             getProducts();
+        } catch (err) {
+            console.error('Error deleting product:', err);
+            
+            // Show backend error message if available, otherwise show generic message
+            const errorMessage = err.response?.data?.message || t('messages.error');
+            showNotification(errorMessage, 'error');
         }
-
     }
 
     return (
         <>
-
+            <Notification
+                notification={notification}
+                onClose={hideNotification}
+            />
 
             <div className='container-fluid p-5'>
                 <h1 className="main-title" style={{ textAlign: 'center' }}>
-  NHẬT KÍ ĐI ĐÁNH BÓNG + NHIỆT LUYỆN
-  <br />
-  研磨 + 熱処理 日誌
-</h1>
+                  {t('main.title')}
+                </h1>
                 <div className='d-flex justify-content-between align-items-center mb-3'>
                     <div className='add_button'>
-                        <NavLink to="/insertproduct" className='btn btn-primary fs-5'> + Thêm mặt hàng mới<br />新規商品登録</NavLink>
+                        <NavLink to="/insertproduct" className='btn btn-primary fs-5'>
+                          + {t('main.addNewProduct')}
+                        </NavLink>
                     </div>
-                    <button onClick={getProducts} className='btn btn-outline-secondary fs-6' title="Làm mới dữ liệu">
-                        🔄 Làm mới
+                    <button onClick={getProducts} className='btn btn-outline-secondary fs-6' title={t('main.refresh')}>
+                        🔄 {t('main.refresh')}
                     </button>
                 </div>
                 <div className="alert alert-info mb-3" style={{ fontSize: '14px' }}>
-                    <strong>Hướng dẫn quét QR:</strong> Chỉ sử dụng camera điện thoại để quét QR code và cập nhật ngày giao/nhận tự động. Đảm bảo điện thoại cùng mạng với máy tính. Quy trình: Ngày giao → Ngày nhận → Hoàn thành.
-                    <br /><strong>Lưu ý:</strong> Nếu IP không đúng, hãy thay đổi NETWORK_IP trong code thành địa chỉ IP thực của máy bạn (ví dụ: 192.168.1.105).
+                    <strong>{t('main.qrInstructions')}</strong>
+                    <br /><strong>{t('main.ipNote')}</strong>
                 </div>
                 <div className="overflow-auto mt-3" style={{ maxHeight: "40rem" }}>
                     <table className="table table-striped table-hover mt-3 fs-6" style={{ minWidth: '1800px' }}>
                         <thead>
                             <tr className="tr_color">
-                                <th scope="col" style={{ textAlign: 'center' }}>STT<br />工順</th>
-                                <th scope="col" style={{ textAlign: 'center' }}>Ngày tạo<br />作成日</th>
-                                                <th scope="col" style={{ textAlign: 'center' }}>Tên hàng<br />品名</th>
-                                <th scope="col" style={{ textAlign: 'center' }}>Số hiệu lố<br />ロットNo.</th>
-                                <th scope="col" style={{ textAlign: 'center' }}>Ngày giao đánh bóng / Số lượng giao<br />研磨出荷日 / 発送数量</th>
-                                {/* <th scope="col" style={{ textAlign: 'center' }}>Số lượng giao</th> */} 
-                                <th scope="col" style={{ textAlign: 'center' }}> Ngày nhận đánh bóng / Số lượng nhận<br />研磨受入日 / 返却数量</th>
-                                {/* <th scope="col" style={{ textAlign: 'center' }}>Số lượng nhận</th> */}
-                                <th scope="col" style={{ textAlign: 'center' }}>Ngày cập nhật<br />更新日</th>
-                                {/* <th scope="col">Người quét giao</th> */}
-                                {/* <th scope="col">Người quét nhận</th> */}
-                                <th scope="col" style={{ textAlign: 'center' }}>QR Code<br />QR コード</th>
-                                {/* <th scope="col">Update</th>
-                                <th scope="col">Delete</th> */}
+                                <th scope="col" style={{ textAlign: 'center' }}>{t('table.stt')}</th>
+                                <th scope="col" style={{ textAlign: 'center' }}>{t('table.createdDate')}</th>
+                                <th scope="col" style={{ textAlign: 'center' }}>{t('table.productName')}</th>
+                                <th scope="col" style={{ textAlign: 'center' }}>{t('table.lotNumber')}</th>
+                                <th scope="col" style={{ textAlign: 'center' }}>{t('table.deliveryInfo')}</th>
+                                <th scope="col" style={{ textAlign: 'center' }}>{t('table.receivedInfo')}</th>
+                                <th scope="col" style={{ textAlign: 'center' }}>{t('table.updatedDate')}</th>
+                                <th scope="col" style={{ textAlign: 'center' }}>{t('table.qrCode')}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -195,14 +204,14 @@ export default function Products() {
                                         if (!element.ProductDeliveryDate) {
                                             // Show delivery QR with quantity input if no delivery date
                                             return {
-                                                url: `${API_BASE_URL}/deliver-product/${element._id}`,
-                                                label: 'Quét mã để nhập số lượng giao'
+                                                url: `${API_BASE_URL}/deliver-product/${element._id}?lang=${currentLanguage}`,
+                                                label: t('table.scanToDelivery')
                                             };
                                         } else if (!element.ProductReceivedDate) {
                                             // Show received QR with quantity input if delivery date exists but no received date
                                             return {
-                                                url: `${API_BASE_URL}/receive-product/${element._id}`,
-                                                label: 'Quét mã để nhập số lượng nhận'
+                                                url: `${API_BASE_URL}/receive-product/${element._id}?lang=${currentLanguage}`,
+                                                label: t('table.scanToReceive')
                                             };
                                         }
                                         return null; // No QR needed
@@ -226,7 +235,7 @@ export default function Products() {
                                                             {element.DeliveryScannedBy}
                                                         </span>
                                                     ) : (
-                                                        <span style={{ color: '#6c757d' }}>Chưa quét</span>
+                                                        <span style={{ color: '#6c757d' }}>{t('table.notScanned')}</span>
                                                     )}
                                                     </div>
                                                 </td>
@@ -242,7 +251,7 @@ export default function Products() {
                                                             {element.ReceivedScannedBy}
                                                         </span>
                                                     ) : (
-                                                        <span style={{ color: '#6c757d' }}>Chưa quét</span>
+                                                        <span style={{ color: '#6c757d' }}>{t('table.notScanned')}</span>
                                                     )}
                                                     </div>
                                                 </td>
@@ -280,7 +289,7 @@ export default function Products() {
                                                                 marginTop: '5px',
                                                                 fontWeight: '500'
                                                             }}>
-                                                                Hoàn thành
+                                                                    {t('table.completed')}
                                                             </div>
                                                         </div>
                                                     )}

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import io from 'socket.io-client'
 import { NETWORK_IP, API_PORT, API_BASE_URL, WS_URL } from '../config'
+import { useLanguage } from '../contexts/LanguageContext'
 
 // QR Code component using online service - Read only for mobile scanning
 const QRCode = ({ value, size = 120 }) => {

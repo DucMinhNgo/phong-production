@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom';
 import { API_BASE_URL, NETWORK_IP, API_PORT } from '../config';
+import { useLanguage } from '../contexts/LanguageContext';
 
 // QR Code component for product confirmation
 const ProductQRCode = ({ value, size = 150 }) => {
@@ -54,22 +55,18 @@ const ProductQRCode = ({ value, size = 150 }) => {
 };
 
 export default function InsertProduct() {
+    const { t, currentLanguage } = useLanguage();
 
     return (
         <div className='container-fluid p-5'>
-            <h1 className='text-center mb-5'>Thêm mặt hàng mới
-                <br />新規商品登録
-            </h1>
+            <h1 className='text-center mb-5'>{t('main.addNewProduct')}</h1>
 
             <div className="text-center">
                 <div className="alert alert-info mb-4" style={{ fontSize: '16px', maxWidth: '600px', margin: '0 auto' }}>
-                    <strong>📱 Hướng dẫn tạo sản phẩm:</strong><br />
-                    1. Quét QR code bên dưới bằng camera điện thoại<br />
-                    2. Nhập thông tin sản phẩm trực tiếp từ điện thoại<br />
-                    3. Sản phẩm sẽ được tạo ngay lập tức
+                    <strong>📱 {t('main.qrInstructions')}</strong>
                 </div>
 
-                <ProductQRCode value={`${API_BASE_URL}/create-product-form`} size={200} />
+                <ProductQRCode value={`${API_BASE_URL}/create-product-form?lang=${currentLanguage}`} size={200} />
 
                 <div style={{
                     fontSize: '16px',
@@ -77,12 +74,12 @@ export default function InsertProduct() {
                     marginTop: '20px',
                     fontWeight: '500'
                 }}>
-                    📱 Quét từ camera điện thoại để tạo sản phẩm mới
+                    📱 {t('main.addNewProduct')}
                 </div>
             </div>
 
             <div className='d-flex justify-content-center mt-5'>
-                <NavLink to="/products" className='btn btn-secondary fs-4 px-4 py-2'>Quay lại danh sách</NavLink>
+                <NavLink to="/products" className='btn btn-secondary fs-4 px-4 py-2'>{t('common.goBack', 'Quay lại danh sách')}</NavLink>
             </div>
         </div>
     )

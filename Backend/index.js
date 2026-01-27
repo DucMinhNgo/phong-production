@@ -9,9 +9,11 @@ const cors = require('cors')
 const http = require('http')
 const socketIo = require('socket.io')
 const router = require('./Routes/router')
+const { addTranslation } = require('./translations')
 
 app.use(cors());
 app.use(express.json());
+app.use(addTranslation); // Add translation middleware
 app.use(router);
 
 const server = http.createServer(app);
