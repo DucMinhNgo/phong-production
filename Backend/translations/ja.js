@@ -51,9 +51,12 @@ module.exports = {
   },
 
   form: {
-    deliveryQuantity: 'ラリーの回数を入力してください。',
+    deliveryQuantity: 'Nhập số lượng giao đánh bóng',
     productName: '製品名',
     lotNumber: 'ロット番号',
     employeeCode: '従業員コード'
+    }
+    table:{
+      lotNumber: 'ット番号',
   }
 };

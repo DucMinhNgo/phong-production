@@ -55,5 +55,8 @@ module.exports = {
     productName: 'Tên sản phẩm',
     lotNumber: 'Số hiệu lố',
     employeeCode: 'Mã nhân viên'
+    }
+    table:{
+      lotNumber: 'Số hiệu lố',
   }
 };
