@@ -574,28 +574,26 @@ router.get('/receive-product/:id', async (req, res) => {
         }
 
         // Validate workflow timing before allowing "receive"
-        const skipCountdown = req.query.skipCountdown === 'true';
-        if (!skipCountdown) {
-            const validation = await validateWorkflowTiming(product, 'receive');
-            if (!validation.isValid) {
-                // Show countdown page if time remaining is less than or equal to 1 minute
-                if (validation.remainingMinutes <= 1 && validation.remainingMinutes > 0) {
-                    const html = generateHTML(req.language, 'countdownPage', {
-                        message: `${req.t('workflow.waitReceive', 'Chờ thời gian nhận hàng')} - ${scannedUser.UserName}`,
-                        remainingSeconds: validation.remainingSeconds,
-                        totalSeconds: validation.remainingSeconds,
-                        productName: `${product.ProductName} (${product.ProductBarcode})`,
-                        nextStep: req.t('workflow.stepReceive', 'Nhận đánh bóng'),
-                        minimumMinutes: String(validation.minimumMinutes || 1),
-                        nextUrl: `/receive-product/${req.params.id}?lang=${req.language}&skipCountdown=true`
-                    });
-                    return res.status(200).send(html);
-                }
-                const errorHtml = generateHTML(req.language, 'errorPage', {
-                    message: validation.message
+        const validation = await validateWorkflowTiming(product, 'receive');
+        if (!validation.isValid) {
+            // Show countdown page if time remaining is less than or equal to 1 minute
+            if (validation.remainingMinutes <= 1 && validation.remainingMinutes > 0) {
+                const html = generateHTML(req.language, 'countdownPage', {
+                    message: `${req.t('workflow.waitReceive', 'Chờ thời gian nhận hàng')} - ${scannedUser.UserName}`,
+                    remainingSeconds: validation.remainingSeconds,
+                    totalSeconds: validation.remainingSeconds,
+                    productName: `${product.ProductName} (${product.ProductBarcode})`,
+                    nextStep: req.t('workflow.stepReceive', 'Nhận đánh bóng'),
+                    minimumMinutes: String(validation.minimumMinutes || 1),
+                    // Do NOT bypass timing with skipCountdown; user must rescan/retry normally
+                    nextUrl: `/receive-product/${req.params.id}?lang=${req.language}`
                 });
-                return res.status(400).send(errorHtml);
+                return res.status(200).send(html);
             }
+            const errorHtml = generateHTML(req.language, 'errorPage', {
+                message: validation.message
+            });
+            return res.status(400).send(errorHtml);
         }
 
         const html = generateHTML(req.language, 'receiveForm', {
@@ -649,30 +647,26 @@ router.get('/assemble-product/:id', async (req, res) => {
             return res.status(404).send(errorHtml);
         }
 
-        // Validate workflow timing (skip if skipCountdown is true)
-        const skipCountdown = req.query.skipCountdown === 'true';
-        if (!skipCountdown) {
-            const validation = await validateWorkflowTiming(product, 'assembling');
-            if (!validation.isValid) {
-                // Show countdown page if time remaining is less than or equal to 1 minute
-                if (validation.remainingMinutes <= 1 && validation.remainingMinutes > 0) {
-                    const html = generateHTML(req.language, 'countdownPage', {
-                        message: `${req.t('workflow.waitAssembling', 'Chờ thời gian lắp ráp')} - ${scannedUser.UserName}`,
-                        remainingSeconds: validation.remainingSeconds,
-                        totalSeconds: validation.remainingSeconds,
-                        productName: `${product.ProductName} (${product.ProductBarcode})`,
-                        nextStep: req.t('workflow.stepAssembling', 'Lắp ráp'),
-                        minimumMinutes: String(validation.minimumMinutes || 1),
-                        nextUrl: `/assemble-product/${req.params.id}?lang=${req.language}&skipCountdown=true`
-                    });
-                    return res.status(200).send(html);
-                } else {
-                    const errorHtml = generateHTML(req.language, 'errorPage', {
-                        message: validation.message
-                    });
-                    return res.status(400).send(errorHtml);
-                }
+        // Validate workflow timing (no bypass via query params)
+        const validation = await validateWorkflowTiming(product, 'assembling');
+        if (!validation.isValid) {
+            // Show countdown page if time remaining is less than or equal to 1 minute
+            if (validation.remainingMinutes <= 1 && validation.remainingMinutes > 0) {
+                const html = generateHTML(req.language, 'countdownPage', {
+                    message: `${req.t('workflow.waitAssembling', 'Chờ thời gian lắp ráp')} - ${scannedUser.UserName}`,
+                    remainingSeconds: validation.remainingSeconds,
+                    totalSeconds: validation.remainingSeconds,
+                    productName: `${product.ProductName} (${product.ProductBarcode})`,
+                    nextStep: req.t('workflow.stepAssembling', 'Lắp ráp'),
+                    minimumMinutes: String(validation.minimumMinutes || 1),
+                    nextUrl: `/assemble-product/${req.params.id}?lang=${req.language}`
+                });
+                return res.status(200).send(html);
             }
+            const errorHtml = generateHTML(req.language, 'errorPage', {
+                message: validation.message
+            });
+            return res.status(400).send(errorHtml);
         }
 
         const html = generateHTML(req.language, 'assemblingForm', {
@@ -726,30 +720,26 @@ router.get('/warehouse-product/:id', async (req, res) => {
             return res.status(404).send(errorHtml);
         }
 
-        // Validate workflow timing (skip if skipCountdown is true)
-        const skipCountdown = req.query.skipCountdown === 'true';
-        if (!skipCountdown) {
-            const validation = await validateWorkflowTiming(product, 'warehousing');
-            if (!validation.isValid) {
-                // Show countdown page if time remaining is less than or equal to 1 minute
-                if (validation.remainingMinutes <= 1 && validation.remainingMinutes > 0) {
-                    const html = generateHTML(req.language, 'countdownPage', {
-                        message: `${req.t('workflow.waitWarehousing', 'Chờ thời gian nhập kho')} - ${scannedUser.UserName}`,
-                        remainingSeconds: validation.remainingSeconds,
-                        totalSeconds: validation.remainingSeconds,
-                        productName: `${product.ProductName} (${product.ProductBarcode})`,
-                        nextStep: req.t('workflow.stepWarehousing', 'Nhập kho'),
-                        minimumMinutes: String(validation.minimumMinutes || 1),
-                        nextUrl: `/warehouse-product/${req.params.id}?lang=${req.language}&skipCountdown=true`
-                    });
-                    return res.status(200).send(html);
-                } else {
-                    const errorHtml = generateHTML(req.language, 'errorPage', {
-                        message: validation.message
-                    });
-                    return res.status(400).send(errorHtml);
-                }
+        // Validate workflow timing (no bypass via query params)
+        const validation = await validateWorkflowTiming(product, 'warehousing');
+        if (!validation.isValid) {
+            // Show countdown page if time remaining is less than or equal to 1 minute
+            if (validation.remainingMinutes <= 1 && validation.remainingMinutes > 0) {
+                const html = generateHTML(req.language, 'countdownPage', {
+                    message: `${req.t('workflow.waitWarehousing', 'Chờ thời gian nhập kho')} - ${scannedUser.UserName}`,
+                    remainingSeconds: validation.remainingSeconds,
+                    totalSeconds: validation.remainingSeconds,
+                    productName: `${product.ProductName} (${product.ProductBarcode})`,
+                    nextStep: req.t('workflow.stepWarehousing', 'Nhập kho'),
+                    minimumMinutes: String(validation.minimumMinutes || 1),
+                    nextUrl: `/warehouse-product/${req.params.id}?lang=${req.language}`
+                });
+                return res.status(200).send(html);
             }
+            const errorHtml = generateHTML(req.language, 'errorPage', {
+                message: validation.message
+            });
+            return res.status(400).send(errorHtml);
         }
 
         const html = generateHTML(req.language, 'warehousingForm', {
@@ -2355,32 +2345,43 @@ router.put('/workflow-config/:stepName', async (req, res) => {
         const { stepName } = req.params;
         const { minimumMinutes, description, isActive } = req.body;
 
-        const updateData = {
-            updatedDate: new Date()
-        };
-
-        if (minimumMinutes !== undefined) {
-            updateData.minimumMinutes = Math.max(0, parseInt(minimumMinutes));
-        }
-        if (description !== undefined) {
-            updateData.description = description;
-        }
-        if (isActive !== undefined) {
-            updateData.isActive = Boolean(isActive);
-        }
-
-        const updatedConfig = await WorkflowConfig.findOneAndUpdate(
-            { stepName: stepName },
-            updateData,
-            { new: true }
-        );
-
-        if (!updatedConfig) {
-            return res.status(404).json({
-                message: 'Workflow configuration not found',
+        // Enforce "single place to configure": only allow global_step_delay updates
+        if (stepName !== 'global_step_delay') {
+            return res.status(400).json({
+                message: 'Chỉ cho phép cấu hình tại global_step_delay (1 chỗ cho tất cả bước quét)',
                 language: req.language
             });
         }
+
+        const setData = { updatedDate: new Date() };
+        if (minimumMinutes !== undefined) {
+            const parsed = parseInt(minimumMinutes, 10);
+            if (Number.isNaN(parsed)) {
+                return res.status(400).json({
+                    message: 'minimumMinutes không hợp lệ',
+                    language: req.language
+                });
+            }
+            setData.minimumMinutes = Math.max(0, parsed);
+        }
+        if (description !== undefined) setData.description = description;
+        if (isActive !== undefined) setData.isActive = Boolean(isActive);
+
+        const fallbackDescription = 'Thời gian tối thiểu giữa mỗi bước quét (áp dụng cho tất cả bước)';
+        const update = {
+            $set: setData,
+            $setOnInsert: {
+                stepName: 'global_step_delay',
+                description: fallbackDescription,
+                isActive: true
+            }
+        };
+
+        const updatedConfig = await WorkflowConfig.findOneAndUpdate(
+            { stepName: 'global_step_delay' },
+            update,
+            { new: true, upsert: true, setDefaultsOnInsert: true }
+        );
 
         res.status(200).json({
             message: req.t('success.dataUpdated') || 'Configuration updated successfully',
@@ -2421,7 +2422,8 @@ router.get('/test-countdown/:seconds?', async (req, res) => {
 
 router.get('/workflow-admin', async (req, res) => {
     try {
-        const configs = await WorkflowConfig.find({}).sort({ stepName: 1 });
+        // Single config place: show only global_step_delay
+        const configs = await WorkflowConfig.find({ stepName: 'global_step_delay' }).sort({ stepName: 1 });
         
         const configRows = configs.map(config => `
             <tr>
@@ -2527,9 +2529,7 @@ router.get('/workflow-admin', async (req, res) => {
                         <div style="margin-top: 20px; padding: 15px; background-color: #e9ecef; border-radius: 5px;">
                             <h4>📝 Hướng dẫn:</h4>
                             <ul>
-                                <li><strong>delivery_to_receive:</strong> Thời gian từ khi giao hàng đến khi có thể nhận hàng</li>
-                                <li><strong>receive_to_assembling:</strong> Thời gian từ khi nhận hàng đến khi có thể lắp ráp</li>
-                                <li><strong>assembling_to_warehousing:</strong> Thời gian từ khi lắp ráp đến khi có thể nhập kho</li>
+                                <li><strong>global_step_delay:</strong> Thời gian tối thiểu giữa mỗi bước quét (áp dụng cho tất cả bước)</li>
                             </ul>
                         </div>
                     </div>

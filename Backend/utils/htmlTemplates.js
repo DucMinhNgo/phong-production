@@ -1220,7 +1220,7 @@ const generateHTML = (language, templateType, data = {}) => {
           <body>
             <div class="container">
               <div class="icon">⏰</div>
-              <div class="title">${data.message}</div>
+              <div class="title" id="titleText">${data.message}</div>
 
               <div class="progress-bar">
                 <div class="progress-fill" id="progressFill" style="width: 0%"></div>
@@ -1233,10 +1233,9 @@ const generateHTML = (language, templateType, data = {}) => {
                 <strong>${translate('workflow.productInfo', 'Thông tin sản phẩm')}:</strong><br>
                 ${data.productName}<br>
                 <strong>${translate('workflow.nextStep', 'Bước tiếp theo')}:</strong> ${data.nextStep}<br>
-                <strong>${translate('workflow.minimumWait', 'Thời gian chờ tối thiểu')}:</strong> ${data.minimumMinutes} ${translate('workflow.minutes', 'phút')}
+                <strong>${translate('workflow.minimumWait', 'Thời gian chờ tối thiểu')}:</strong> ${data.minimumMinutes} ${translate('workflow.minutes', 'phút')}<br>
+                <em>${translate('workflow.rescanHint', 'Hết thời gian, vui lòng quét lại mã QR để tiếp tục.')}</em>
               </div>
-
-              <button class="skip-btn" onclick="skipCountdown()">${translate('workflow.skipCountdown', 'Bỏ qua đếm ngược')}</button>
             </div>
 
             <script>
@@ -1245,11 +1244,14 @@ const generateHTML = (language, templateType, data = {}) => {
               const countdownElement = document.getElementById('countdown');
               const unitElement = document.getElementById('unitLabel');
               const progressFill = document.getElementById('progressFill');
+              const titleText = document.getElementById('titleText');
               const secondsLabel = '${translate('workflow.seconds', 'giây')}';
               const minutesLabel = '${translate('workflow.minutes', 'phút')}';
-              const skipConfirmText = '${translate('workflow.skipConfirm', 'Bạn có chắc muốn bỏ qua thời gian chờ?')}';
+              const doneText = '${translate('workflow.doneWait', 'Đã đủ thời gian. Vui lòng quét lại mã QR để tiếp tục.') }';
+              let done = false;
 
               function updateDisplay() {
+                if (done) return;
                 const minutes = Math.floor(remainingTime / 60);
                 const seconds = remainingTime % 60;
 
@@ -1278,14 +1280,12 @@ const generateHTML = (language, templateType, data = {}) => {
                 remainingTime--;
 
                 if (remainingTime < 0) {
-                  // Time's up -> go to next step
-                  window.location.href = '${data.nextUrl}';
-                }
-              }
-
-              function skipCountdown() {
-                if (confirm(skipConfirmText)) {
-                  window.location.href = '${data.nextUrl}';
+                  // Time's up -> stop here, require rescan (no auto-redirect)
+                  done = true;
+                  countdownElement.textContent = '0';
+                  unitElement.textContent = secondsLabel;
+                  countdownElement.className = 'countdown';
+                  titleText.textContent = doneText;
                 }
               }
 
