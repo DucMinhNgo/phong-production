@@ -681,8 +681,11 @@ router.get('/receive-product/:id', async (req, res) => {
         // Validate workflow timing before allowing "receive"
         const validation = await validateWorkflowTiming(product, 'receive');
         if (!validation.isValid) {
-            // Show countdown page if time remaining is less than or equal to 1 minute
-            if (validation.remainingMinutes <= 1 && validation.remainingMinutes > 0) {
+            // Auto-flow: always show countdown when waiting time remains
+            // Manual: show countdown only when <= 1 minute to avoid long waits on screen
+            const shouldShowCountdown = (auto && validation.remainingSeconds > 0) ||
+                (validation.remainingMinutes <= 1 && validation.remainingMinutes > 0);
+            if (shouldShowCountdown) {
                 const html = generateHTML(req.language, 'countdownPage', {
                     message: `${req.t('workflow.waitReceive', 'Chờ thời gian nhận hàng')} - ${scannedUser.UserName}`,
                     remainingSeconds: validation.remainingSeconds,
@@ -760,8 +763,9 @@ router.get('/assemble-product/:id', async (req, res) => {
         // Validate workflow timing
         const validation = await validateWorkflowTiming(product, 'assembling');
         if (!validation.isValid) {
-            // Show countdown page if time remaining is less than or equal to 1 minute
-            if (validation.remainingMinutes <= 1 && validation.remainingMinutes > 0) {
+            const shouldShowCountdown = (auto && validation.remainingSeconds > 0) ||
+                (validation.remainingMinutes <= 1 && validation.remainingMinutes > 0);
+            if (shouldShowCountdown) {
                 const html = generateHTML(req.language, 'countdownPage', {
                     message: `${req.t('workflow.waitAssembling', 'Chờ thời gian lắp ráp')} - ${scannedUser.UserName}`,
                     remainingSeconds: validation.remainingSeconds,
@@ -839,8 +843,9 @@ router.get('/warehouse-product/:id', async (req, res) => {
         // Validate workflow timing
         const validation = await validateWorkflowTiming(product, 'warehousing');
         if (!validation.isValid) {
-            // Show countdown page if time remaining is less than or equal to 1 minute
-            if (validation.remainingMinutes <= 1 && validation.remainingMinutes > 0) {
+            const shouldShowCountdown = (auto && validation.remainingSeconds > 0) ||
+                (validation.remainingMinutes <= 1 && validation.remainingMinutes > 0);
+            if (shouldShowCountdown) {
                 const html = generateHTML(req.language, 'countdownPage', {
                     message: `${req.t('workflow.waitWarehousing', 'Chờ thời gian nhập kho')} - ${scannedUser.UserName}`,
                     remainingSeconds: validation.remainingSeconds,

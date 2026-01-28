@@ -1281,7 +1281,11 @@ const generateHTML = (language, templateType, data = {}) => {
                 ${data.productName}<br>
                 <strong>${translate('workflow.nextStep', 'Bước tiếp theo')}:</strong> ${data.nextStep}<br>
                 <strong>${translate('workflow.minimumWait', 'Thời gian chờ tối thiểu')}:</strong> ${data.minimumMinutes} ${translate('workflow.minutes', 'phút')}<br>
-                <em>${translate('workflow.rescanHint', 'Hết thời gian, vui lòng quét lại mã QR để tiếp tục.')}</em>
+                <em>${
+                  data.autoRedirect
+                    ? translate('workflow.autoNextHint', 'Hết thời gian, hệ thống sẽ tự chuyển sang bước tiếp theo.')
+                    : translate('workflow.rescanHint', 'Hết thời gian, vui lòng quét lại mã QR để tiếp tục.')
+                }</em>
               </div>
             </div>
 
@@ -1295,8 +1299,9 @@ const generateHTML = (language, templateType, data = {}) => {
               const secondsLabel = '${translate('workflow.seconds', 'giây')}';
               const minutesLabel = '${translate('workflow.minutes', 'phút')}';
               const doneText = '${translate('workflow.doneWait', 'Đã đủ thời gian. Vui lòng quét lại mã QR để tiếp tục.') }';
-              const autoRedirect = ${data.autoRedirect ? 'true' : 'false'};
-              const nextUrl = ${(data.nextUrl ? `'${data.nextUrl}'` : 'null')};
+              // If autoRedirect is not specified, default to true when nextUrl is provided
+              const autoRedirect = ${data.autoRedirect === undefined ? (data.nextUrl ? 'true' : 'false') : (data.autoRedirect ? 'true' : 'false')};
+              const nextUrl = ${(data.nextUrl ? `'${String(data.nextUrl).replace(/'/g, "\\'")}'` : 'null')};
               let done = false;
 
               function updateDisplay() {
