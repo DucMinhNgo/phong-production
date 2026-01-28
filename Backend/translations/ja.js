@@ -51,6 +51,7 @@ module.exports = {
   },
 
   form: {
+    deliveryQuantity: 'ラリーの回数を入力してください。',
     productName: '製品名',
     lotNumber: 'ロット番号',
     employeeCode: '従業員コード'

@@ -26,7 +26,7 @@ module.exports = {
 
   validation: {
     productNameRequired: "Vui lòng nhập đầy đủ thông tin",
-    lotNumberRequired: "Số hiệu lô không được quá 20 ký tự",
+    lotNumberRequired: "Số hiệu lố không được quá 20 ký tự",
     quantityRequired: "Vui lòng nhập số lượng hợp lệ",
     quantityMustBeNumber: "Số lượng phải là một số",
     quantityMustBePositive: "Số lượng phải lớn hơn 0",
@@ -34,7 +34,7 @@ module.exports = {
     emailRequired: "Email là bắt buộc",
     emailInvalid: "Email không hợp lệ",
     allFieldsRequired: "Vui lòng nhập đầy đủ thông tin",
-    lotNumberTooLong: "Số hiệu lô không được quá 20 ký tự"
+    lotNumberTooLong: "Số hiệu lố không được quá 20 ký tự"
   },
 
   status: {
@@ -51,8 +51,9 @@ module.exports = {
   },
 
   form: {
+    deliveryQuantity: 'Nhập số lượng giao đánh bóng',
     productName: 'Tên sản phẩm',
-    lotNumber: 'Số hiệu lô',
+    lotNumber: 'Số hiệu lố',
     employeeCode: 'Mã nhân viên'
   }
 };

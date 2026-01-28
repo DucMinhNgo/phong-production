@@ -12,7 +12,7 @@ export const vi = {
     title: "NHẬT KÍ ĐI ĐÁNH BÓNG + NHIỆT LUYỆN",
     addNewProduct: "Thêm mặt hàng mới",
     refresh: "Làm mới",
-    qrInstructions: "Hướng dẫn quét QR: Chỉ sử dụng camera điện thoại để quét QR code và cập nhật ngày giao/nhận tự động. Đảm bảo điện thoại cùng mạng với máy tính. Quy trình: Ngày giao → Ngày nhận → Hoàn thành.",
+    qrInstructions: "Hướng dẫn quét QR: Chỉ sử dụng camera điện thoại để quét QR code và cập nhật ngày giao/nhận tự động. Quy trình: Ngày giao → Ngày nhận → Hoàn thành.",
     ipNote: "Nếu IP không đúng, hãy thay đổi NETWORK_IP trong code thành địa chỉ IP thực của máy bạn (ví dụ: 192.168.1.105)."
   },
 
@@ -21,8 +21,8 @@ export const vi = {
     createdDate: "Ngày tạo",
     productName: "Tên hàng",
     lotNumber: "Số hiệu lố",
-    deliveryInfo: "Ngày giao đánh bóng / Số lượng giao",
-    receivedInfo: "Ngày nhận đánh bóng / Số lượng nhận",
+    deliveryInfo: "Ngày giao đánh bóng / Số lượng",
+    receivedInfo: "Ngày nhận đánh bóng / Số lượng",
     updatedDate: "Ngày cập nhật",
     qrCode: "QR Code",
     notScanned: "Chưa quét",
