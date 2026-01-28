@@ -13,7 +13,7 @@ export const vi = {
     addNewProduct: "Thêm mặt hàng mới",
     refresh: "Làm mới",
     qrInstructions: "Hướng dẫn quét QR: Chỉ sử dụng camera điện thoại để quét QR code và cập nhật ngày giao/nhận tự động. Đảm bảo điện thoại cùng mạng với máy tính. Quy trình: Ngày giao → Ngày nhận → Hoàn thành.",
-    ipNote: "Lưu ý: Nếu IP không đúng, hãy thay đổi NETWORK_IP trong code thành địa chỉ IP thực của máy bạn (ví dụ: 192.168.1.105)."
+    ipNote: "Nếu IP không đúng, hãy thay đổi NETWORK_IP trong code thành địa chỉ IP thực của máy bạn (ví dụ: 192.168.1.105)."
   },
 
   table: {
