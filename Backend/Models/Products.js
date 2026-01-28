@@ -59,7 +59,6 @@ const ProductSchema = new mongoose.Schema(
         WorkflowStep: {
             type: String,
             enum: ['delivery', 'received', 'completed'],
-            default: null,
             required: false,
         },
         NextStepAvailable: {
