@@ -1339,7 +1339,21 @@ const generateHTML = (language, templateType, data = {}) => {
                   unitElement.textContent = secondsLabel;
                   countdownElement.className = 'countdown';
                   if (autoRedirect && nextUrl) {
-                    window.location.href = nextUrl;
+                    // Some mobile QR browsers can be picky about navigation timing;
+                    // use assign + a tiny delay as a fallback.
+                    titleText.textContent = '${translate('workflow.autoNextHint', 'Hết thời gian, hệ thống sẽ tự chuyển sang bước tiếp theo.')}';
+                    try {
+                      window.location.assign(nextUrl);
+                    } catch (e) {
+                      window.location.href = nextUrl;
+                    }
+                    setTimeout(() => {
+                      try {
+                        window.location.assign(nextUrl);
+                      } catch (e) {
+                        window.location.href = nextUrl;
+                      }
+                    }, 250);
                   } else {
                     titleText.textContent = doneText;
                   }
