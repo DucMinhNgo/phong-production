@@ -60,6 +60,7 @@ module.exports = {
     
     table:{
       lotNumber: 'ット番号',
+      quantity: '数量',
      },
 
 

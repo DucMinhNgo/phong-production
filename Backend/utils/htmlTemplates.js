@@ -76,7 +76,7 @@ const generateHTML = (language, templateType, data = {}) => {
       return `
         <html>
           <head>
-            <title>${translate('deliveryQuantity')} - ${data.productName}</title>
+            <title>${translate('Nhập số lượng giao đánh bóng')} - ${data.productName}</title>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             ${baseStyles}
@@ -84,15 +84,15 @@ const generateHTML = (language, templateType, data = {}) => {
           <body>
             <div class="container">
               <div class="success">🚛</div>
-              <h2>${translate('form.deliveryQuantity')}</h2>
+              <h2>${translate('Nhập số lượng giao đánh bóng')}</h2>
               <div class="product-info">
                 <strong>${data.productName}</strong><br>
                 ${translate('table.lotNumber')}: ${data.productBarcode}
               </div>
               <form id="deliverForm">
                 <div class="form-group">
-                  <label for="quantity">${translate('form.deliveryQuantity')}:</label>
-                  <input type="number" id="quantity" name="quantity" min="0" required placeholder="${translate('form.deliveryQuantity')}">
+                  <label for="quantity">${translate('Nhập số lượng giao đánh bóng')}:</label>
+                  <input type="number" id="quantity" name="quantity" min="0" required placeholder="${translate('Nhập số lượng giao đánh bóng')}">
                 </div>
                 <button type="submit" class="button" id="submitBtn">${translate('form.submit')}</button>
               </form>
@@ -155,7 +155,7 @@ const generateHTML = (language, templateType, data = {}) => {
               <div class="product-info">
                 <strong>${data.productName}</strong><br>
                 ${translate('table.lotNumber')}: ${data.productBarcode}<br>
-                ${translate('form.deliveryQuantity')}: ${data.shippingQuantity || translate('common.noData')}
+                ${translate('Nhập số lượng giao đánh bóng')}: ${data.shippingQuantity || translate('common.noData')}
               </div>
               <form id="receiveForm">
                 <div class="form-group">
