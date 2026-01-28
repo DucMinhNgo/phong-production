@@ -1144,6 +1144,7 @@ router.get('/update-delivery/:id', async (req, res) => {
             productId: req.params.id,
             type: 'delivery',
             scannedBy: scannedBy,
+            product: updateProducts,
             timestamp: new Date()
         });
 
@@ -1379,6 +1380,7 @@ router.get('/update-received/:id', async (req, res) => {
             productId: req.params.id,
             type: 'received',
             scannedBy: scannedBy,
+            product: updateProducts,
             timestamp: new Date()
         });
 
@@ -1620,6 +1622,7 @@ router.get('/update-assembling/:id', async (req, res) => {
             productId: req.params.id,
             type: 'assembling',
             scannedBy: scannedBy,
+            product: updateProducts,
             timestamp: new Date()
         });
 
@@ -1837,6 +1840,7 @@ router.get('/update-warehousing/:id', async (req, res) => {
             productId: req.params.id,
             type: 'warehousing',
             scannedBy: scannedBy,
+            product: updateProducts,
             timestamp: new Date()
         });
 
