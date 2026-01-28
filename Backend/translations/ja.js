@@ -51,12 +51,13 @@ module.exports = {
   },
 
   form: {
-    deliveryQuantity: 'Nhập số lượng giao đánh bóng',
+    deliveryQuantity: '研磨品の出荷数量を入力',
     productName: '製品名',
     lotNumber: 'ロット番号',
     employeeCode: '従業員コード'
     }
     table:{
       lotNumber: 'ット番号',
-  }
+
+  
 };
