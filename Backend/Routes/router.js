@@ -581,11 +581,11 @@ router.get('/receive-product/:id', async (req, res) => {
                 // Show countdown page if time remaining is less than or equal to 1 minute
                 if (validation.remainingMinutes <= 1 && validation.remainingMinutes > 0) {
                     const html = generateHTML(req.language, 'countdownPage', {
-                        message: `Chờ thời gian nhận hàng - ${scannedUser.UserName}`,
+                        message: `${req.t('workflow.waitReceive', 'Chờ thời gian nhận hàng')} - ${scannedUser.UserName}`,
                         remainingSeconds: validation.remainingSeconds,
                         totalSeconds: validation.remainingSeconds,
                         productName: `${product.ProductName} (${product.ProductBarcode})`,
-                        nextStep: 'Nhận hàng',
+                        nextStep: req.t('workflow.stepReceive', 'Nhận đánh bóng'),
                         minimumMinutes: String(validation.minimumMinutes || 1),
                         nextUrl: `/receive-product/${req.params.id}?lang=${req.language}&skipCountdown=true`
                     });
@@ -657,11 +657,11 @@ router.get('/assemble-product/:id', async (req, res) => {
                 // Show countdown page if time remaining is less than or equal to 1 minute
                 if (validation.remainingMinutes <= 1 && validation.remainingMinutes > 0) {
                     const html = generateHTML(req.language, 'countdownPage', {
-                        message: `Chờ thời gian lắp ráp - ${scannedUser.UserName}`,
+                        message: `${req.t('workflow.waitAssembling', 'Chờ thời gian lắp ráp')} - ${scannedUser.UserName}`,
                         remainingSeconds: validation.remainingSeconds,
                         totalSeconds: validation.remainingSeconds,
                         productName: `${product.ProductName} (${product.ProductBarcode})`,
-                        nextStep: 'Lắp ráp sản phẩm',
+                        nextStep: req.t('workflow.stepAssembling', 'Lắp ráp'),
                         minimumMinutes: String(validation.minimumMinutes || 1),
                         nextUrl: `/assemble-product/${req.params.id}?lang=${req.language}&skipCountdown=true`
                     });
@@ -734,11 +734,11 @@ router.get('/warehouse-product/:id', async (req, res) => {
                 // Show countdown page if time remaining is less than or equal to 1 minute
                 if (validation.remainingMinutes <= 1 && validation.remainingMinutes > 0) {
                     const html = generateHTML(req.language, 'countdownPage', {
-                        message: `Chờ thời gian nhập kho - ${scannedUser.UserName}`,
+                        message: `${req.t('workflow.waitWarehousing', 'Chờ thời gian nhập kho')} - ${scannedUser.UserName}`,
                         remainingSeconds: validation.remainingSeconds,
                         totalSeconds: validation.remainingSeconds,
                         productName: `${product.ProductName} (${product.ProductBarcode})`,
-                        nextStep: 'Nhập kho sản phẩm',
+                        nextStep: req.t('workflow.stepWarehousing', 'Nhập kho'),
                         minimumMinutes: String(validation.minimumMinutes || 1),
                         nextUrl: `/warehouse-product/${req.params.id}?lang=${req.language}&skipCountdown=true`
                     });
@@ -1155,37 +1155,16 @@ router.get('/update-received/:id', async (req, res) => {
         // Validate workflow timing before allowing "receive"
         const validation = await validateWorkflowTiming(scannedProduct, 'receive');
         if (!validation.isValid) {
-            return res.status(400).send(`
-                <html>
-                    <head>
-                        <title>Chưa đủ thời gian</title>
-                        <meta charset="UTF-8">
-                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                        <style>
-                            body {
-                                font-family: Arial, sans-serif;
-                                text-align: center;
-                                padding: 50px;
-                                background-color: #fff3cd;
-                            }
-                            .warning {
-                                color: #856404;
-                                font-size: 24px;
-                                margin-bottom: 20px;
-                            }
-                            .message {
-                                font-size: 18px;
-                                color: #333;
-                                margin-bottom: 30px;
-                            }
-                        </style>
-                    </head>
-                    <body>
-                        <div class="warning">⏰</div>
-                        <div class="message">${validation.message}</div>
-                    </body>
-                </html>
-            `);
+            const html = generateHTML(req.language, 'countdownPage', {
+                message: `${req.t('workflow.waitReceive', 'Chờ thời gian nhận hàng')} - ${scannedUser.UserName}`,
+                remainingSeconds: validation.remainingSeconds,
+                totalSeconds: validation.remainingSeconds,
+                productName: `${scannedProduct.ProductName} (${scannedProduct.ProductBarcode})`,
+                nextStep: req.t('workflow.stepReceive', 'Nhận đánh bóng'),
+                minimumMinutes: String(validation.minimumMinutes || 1),
+                nextUrl: `/update-received/${req.params.id}?lang=${req.language}&quantity=${encodeURIComponent(quantity || '')}`
+            });
+            return res.status(200).send(html);
         }
 
         const scannedBy = `${scannedUser.UserName} (${scannedUser.EmployeeCode})`;
@@ -1409,37 +1388,16 @@ router.get('/update-assembling/:id', async (req, res) => {
         // Validate workflow timing
         const validation = await validateWorkflowTiming(product, 'assembling');
         if (!validation.isValid) {
-            return res.status(400).send(`
-                <html>
-                    <head>
-                        <title>Chưa đủ thời gian</title>
-                        <meta charset="UTF-8">
-                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                        <style>
-                            body {
-                                font-family: Arial, sans-serif;
-                                text-align: center;
-                                padding: 50px;
-                                background-color: #fff3cd;
-                            }
-                            .warning {
-                                color: #856404;
-                                font-size: 24px;
-                                margin-bottom: 20px;
-                            }
-                            .message {
-                                font-size: 18px;
-                                color: #333;
-                                margin-bottom: 30px;
-                            }
-                        </style>
-                    </head>
-                    <body>
-                        <div class="warning">⏰</div>
-                        <div class="message">${validation.message}</div>
-                    </body>
-                </html>
-            `);
+            const html = generateHTML(req.language, 'countdownPage', {
+                message: `${req.t('workflow.waitAssembling', 'Chờ thời gian lắp ráp')} - ${scannedUser.UserName}`,
+                remainingSeconds: validation.remainingSeconds,
+                totalSeconds: validation.remainingSeconds,
+                productName: `${product.ProductName} (${product.ProductBarcode})`,
+                nextStep: req.t('workflow.stepAssembling', 'Lắp ráp'),
+                minimumMinutes: String(validation.minimumMinutes || 1),
+                nextUrl: `/update-assembling/${req.params.id}?lang=${req.language}&quantity=${encodeURIComponent(quantity || '')}`
+            });
+            return res.status(200).send(html);
         }
 
         const scannedBy = `${scannedUser.UserName} (${scannedUser.EmployeeCode})`;
@@ -1646,37 +1604,16 @@ router.get('/update-warehousing/:id', async (req, res) => {
         // Validate workflow timing
         const validation = await validateWorkflowTiming(product, 'warehousing');
         if (!validation.isValid) {
-            return res.status(400).send(`
-                <html>
-                    <head>
-                        <title>Chưa đủ thời gian</title>
-                        <meta charset="UTF-8">
-                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                        <style>
-                            body {
-                                font-family: Arial, sans-serif;
-                                text-align: center;
-                                padding: 50px;
-                                background-color: #fff3cd;
-                            }
-                            .warning {
-                                color: #856404;
-                                font-size: 24px;
-                                margin-bottom: 20px;
-                            }
-                            .message {
-                                font-size: 18px;
-                                color: #333;
-                                margin-bottom: 30px;
-                            }
-                        </style>
-                    </head>
-                    <body>
-                        <div class="warning">⏰</div>
-                        <div class="message">${validation.message}</div>
-                    </body>
-                </html>
-            `);
+            const html = generateHTML(req.language, 'countdownPage', {
+                message: `${req.t('workflow.waitWarehousing', 'Chờ thời gian nhập kho')} - ${scannedUser.UserName}`,
+                remainingSeconds: validation.remainingSeconds,
+                totalSeconds: validation.remainingSeconds,
+                productName: `${product.ProductName} (${product.ProductBarcode})`,
+                nextStep: req.t('workflow.stepWarehousing', 'Nhập kho'),
+                minimumMinutes: String(validation.minimumMinutes || 1),
+                nextUrl: `/update-warehousing/${req.params.id}?lang=${req.language}&quantity=${encodeURIComponent(quantity || '')}`
+            });
+            return res.status(200).send(html);
         }
 
         // Get the scanned product

@@ -50,16 +50,51 @@ module.exports = {
     addNewProduct: '新規商品登録'
   },
 
+  common: {
+    loading: "読み込み中...",
+    noData: "データなし",
+    success: "成功",
+    open: "開く",
+    close: "閉じる",
+    print: "印刷"
+  },
+
+  messages: {
+    error: "エラー"
+  },
+
   form: {
     deliveryQuantity: '研磨品の出荷数量を入力',
     receivedQuantity: '研磨受入数量を入力',
+    assemblingQuantity: '組立数量を入力',
+    warehousingQuantity: '入庫数量を入力',
     productName: '製品名',
     lotNumber: 'ロット番号',
-    employeeCode: '従業員コード'
+    employeeCode: '従業員コード',
+    submit: '送信'
   },
 
   table:{
     lotNumber: 'ット番号',
     quantity: '数量',
     },
+
+  workflow: {
+    workflowCompleted: '工程は完了しました',
+    countdownTitle: '待機時間のカウントダウン',
+    productInfo: '製品情報',
+    nextStep: '次の工程',
+    minimumWait: '最小待機時間',
+    minutes: '分',
+    seconds: '秒',
+    skipCountdown: 'カウントダウンをスキップ',
+    skipConfirm: '待機時間をスキップしてもよろしいですか？',
+    stepDelivery: '出荷（研磨）',
+    stepReceive: '受入（研磨）',
+    stepAssembling: '組立',
+    stepWarehousing: '入庫',
+    waitReceive: '受入まで待機中',
+    waitAssembling: '組立まで待機中',
+    waitWarehousing: '入庫まで待機中'
+  }
 };

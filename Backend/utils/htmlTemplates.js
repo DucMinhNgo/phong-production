@@ -122,7 +122,7 @@ const generateHTML = (language, templateType, data = {}) => {
                 submitBtn.textContent = '${translate('common.loading')}';
 
                 try {
-                  const response = await fetch('/update-delivery/${data.productId}?quantity=' + quantity, {
+                  const response = await fetch('/update-delivery/${data.productId}?lang=${language}&quantity=' + quantity, {
                     method: 'GET'
                   });
 
@@ -196,7 +196,7 @@ const generateHTML = (language, templateType, data = {}) => {
                 submitBtn.textContent = '${translate('common.loading')}';
 
                 try {
-                  const response = await fetch(window.location.origin + '/update-received/${data.productId}?quantity=' + quantity, {
+                  const response = await fetch(window.location.origin + '/update-received/${data.productId}?lang=${language}&quantity=' + quantity, {
                     method: 'GET'
                   });
 
@@ -1012,7 +1012,7 @@ const generateHTML = (language, templateType, data = {}) => {
                 submitBtn.textContent = '${translate('common.loading')}';
 
                 try {
-                  const response = await fetch(window.location.origin + '/update-assembling/${data.productId}?quantity=' + quantity, {
+                  const response = await fetch(window.location.origin + '/update-assembling/${data.productId}?lang=${language}&quantity=' + quantity, {
                     method: 'GET'
                   });
 
@@ -1088,7 +1088,7 @@ const generateHTML = (language, templateType, data = {}) => {
                 submitBtn.textContent = '${translate('common.loading')}';
 
                 try {
-                  const response = await fetch(window.location.origin + '/update-warehousing/${data.productId}?quantity=' + quantity, {
+                  const response = await fetch(window.location.origin + '/update-warehousing/${data.productId}?lang=${language}&quantity=' + quantity, {
                     method: 'GET'
                   });
 
@@ -1117,7 +1117,7 @@ const generateHTML = (language, templateType, data = {}) => {
       return `
         <html>
           <head>
-            <title>⏰ Đếm ngược thời gian chờ</title>
+            <title>⏰ ${translate('workflow.countdownTitle', 'Đếm ngược thời gian chờ')}</title>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <style>
@@ -1227,16 +1227,16 @@ const generateHTML = (language, templateType, data = {}) => {
               </div>
 
               <div class="countdown" id="countdown">${data.remainingSeconds}</div>
-              <div class="unit" id="unitLabel">${data.remainingSeconds === 1 ? 'giây' : 'giây'}</div>
+              <div class="unit" id="unitLabel">${translate('workflow.seconds', 'giây')}</div>
 
               <div class="info">
-                <strong>Thông tin sản phẩm:</strong><br>
+                <strong>${translate('workflow.productInfo', 'Thông tin sản phẩm')}:</strong><br>
                 ${data.productName}<br>
-                <strong>Bước tiếp theo:</strong> ${data.nextStep}<br>
-                <strong>Thời gian chờ tối thiểu:</strong> ${data.minimumMinutes} phút
+                <strong>${translate('workflow.nextStep', 'Bước tiếp theo')}:</strong> ${data.nextStep}<br>
+                <strong>${translate('workflow.minimumWait', 'Thời gian chờ tối thiểu')}:</strong> ${data.minimumMinutes} ${translate('workflow.minutes', 'phút')}
               </div>
 
-              <button class="skip-btn" onclick="skipCountdown()">Bỏ qua đếm ngược</button>
+              <button class="skip-btn" onclick="skipCountdown()">${translate('workflow.skipCountdown', 'Bỏ qua đếm ngược')}</button>
             </div>
 
             <script>
@@ -1245,17 +1245,20 @@ const generateHTML = (language, templateType, data = {}) => {
               const countdownElement = document.getElementById('countdown');
               const unitElement = document.getElementById('unitLabel');
               const progressFill = document.getElementById('progressFill');
+              const secondsLabel = '${translate('workflow.seconds', 'giây')}';
+              const minutesLabel = '${translate('workflow.minutes', 'phút')}';
+              const skipConfirmText = '${translate('workflow.skipConfirm', 'Bạn có chắc muốn bỏ qua thời gian chờ?')}';
 
               function updateDisplay() {
                 const minutes = Math.floor(remainingTime / 60);
                 const seconds = remainingTime % 60;
 
-                // Hiển thị theo giây khi dưới 1 phút
+                // Show seconds when under 1 minute
                 if (remainingTime < 60) {
                   countdownElement.textContent = remainingTime;
-                  unitElement.textContent = remainingTime === 1 ? 'giây' : 'giây';
+                  unitElement.textContent = secondsLabel;
 
-                  // Thay đổi màu sắc khi còn ít thời gian
+                  // Change color when time is low
                   countdownElement.className = 'countdown';
                   if (remainingTime <= 10) {
                     countdownElement.classList.add('danger');
@@ -1264,32 +1267,32 @@ const generateHTML = (language, templateType, data = {}) => {
                   }
                 } else {
                   countdownElement.textContent = minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
-                  unitElement.textContent = 'phút';
+                  unitElement.textContent = minutesLabel;
                   countdownElement.className = 'countdown';
                 }
 
-                // Cập nhật progress bar
+                // Update progress bar
                 const progressPercent = ((totalTime - remainingTime) / totalTime) * 100;
                 progressFill.style.width = progressPercent + '%';
 
                 remainingTime--;
 
                 if (remainingTime < 0) {
-                  // Thời gian đã hết, chuyển sang bước tiếp theo
+                  // Time's up -> go to next step
                   window.location.href = '${data.nextUrl}';
                 }
               }
 
               function skipCountdown() {
-                if (confirm('Bạn có chắc muốn bỏ qua thời gian chờ?')) {
+                if (confirm(skipConfirmText)) {
                   window.location.href = '${data.nextUrl}';
                 }
               }
 
-              // Cập nhật mỗi giây
+              // Update every second
               setInterval(updateDisplay, 1000);
 
-              // Cập nhật ngay lập tức
+              // Update immediately
               updateDisplay();
             </script>
           </body>

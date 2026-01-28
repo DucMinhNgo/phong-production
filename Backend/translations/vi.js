@@ -91,7 +91,10 @@ module.exports = {
   common: {
     loading: 'Đang tải...',
     noData: 'Không có dữ liệu',
-    success: 'Thành công'
+    success: 'Thành công',
+    open: 'Mở',
+    close: 'Đóng',
+    print: 'In'
   },
 
   messages: {
@@ -102,10 +105,24 @@ module.exports = {
   workflow: {
     timingError: 'Chưa đủ thời gian để thực hiện bước tiếp theo',
     workflowCompleted: 'Quy trình đã hoàn tất',
+    countdownTitle: 'Đếm ngược thời gian chờ',
+    productInfo: 'Thông tin sản phẩm',
     nextStep: 'Bước tiếp theo',
+    minimumWait: 'Thời gian chờ tối thiểu',
     currentStatus: 'Trạng thái hiện tại',
     waitTime: 'Thời gian chờ',
     minutes: 'phút'
+    ,
+    seconds: 'giây',
+    skipCountdown: 'Bỏ qua đếm ngược',
+    skipConfirm: 'Bạn có chắc muốn bỏ qua thời gian chờ?',
+    stepDelivery: 'Giao đánh bóng',
+    stepReceive: 'Nhận đánh bóng',
+    stepAssembling: 'Lắp ráp',
+    stepWarehousing: 'Nhập kho',
+    waitReceive: 'Chờ thời gian nhận hàng',
+    waitAssembling: 'Chờ thời gian lắp ráp',
+    waitWarehousing: 'Chờ thời gian nhập kho'
   },
 
 
