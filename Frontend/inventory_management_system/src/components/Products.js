@@ -240,13 +240,13 @@ export default function Products() {
                                 <th scope="col" style={{ textAlign: 'center' }}>{t('table.stt')}</th>
                                 <th scope="col" style={{ textAlign: 'center' }}>{t('table.createdDate')}</th>
                                 <th scope="col" style={{ textAlign: 'center' }}>{t('table.productName')}</th>
+                                <th scope="col" style={{ textAlign: 'center' }}>{t('table.qrCode')}</th>
                                 <th scope="col" style={{ textAlign: 'center' }}>{t('table.lotNumber')}</th>
                                 <th scope="col" style={{ textAlign: 'center' }}>{t('table.deliveryInfo')}</th>
                                 <th scope="col" style={{ textAlign: 'center' }}>{t('table.receivedInfo')}</th>
                                 <th scope="col" style={{ textAlign: 'center' }}>{t('table.assemblingInfo')}</th>
                                 <th scope="col" style={{ textAlign: 'center' }}>{t('table.warehousingInfo')}</th>
                                 <th scope="col" style={{ textAlign: 'center' }}>{t('table.updatedDate')}</th>
-                                <th scope="col" style={{ textAlign: 'center' }}>{t('table.qrCode')}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -305,6 +305,41 @@ export default function Products() {
                                                 <th scope="row" style={{ textAlign: 'center' }}>{id + 1}</th>
                                                 <td style={{ textAlign: 'center' }}>{formatDate(element.ProductCreatedDate)}</td>
                                                 <td style={{ textAlign: 'center' }}>{element.ProductName}</td>
+                                                <td style={{ minWidth: '140px', textAlign: 'center', verticalAlign: 'middle' }}>
+                                                    {qrContent ? (
+                                                        <div>
+                                                            <QRCode
+                                                                value={qrContent.url}
+                                                                size={100}
+                                                            />
+                                                            <div style={{
+                                                                fontSize: '11px',
+                                                                marginTop: '8px',
+                                                                color: '#495057',
+                                                                fontWeight: '500',
+                                                                lineHeight: '1.2'
+                                                            }}>
+                                                                {qrContent.label}
+                                                            </div>
+                                                        </div>
+                                                    ) : (
+                                                        <div style={{ padding: '20px' }}>
+                                                            <span style={{
+                                                                color: '#28a745',
+                                                                fontSize: '24px',
+                                                                fontWeight: 'bold'
+                                                            }}>✓</span>
+                                                            <div style={{
+                                                                fontSize: '12px',
+                                                                color: '#28a745',
+                                                                marginTop: '5px',
+                                                                fontWeight: '500'
+                                                            }}>
+                                                                    {t('table.completed')}
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </td>
                                                 <td style={{ textAlign: 'center' }}>{element.ProductBarcode}</td>
                                                 <td style={{ textAlign: 'center' }}>
                                                     <div>{element.ShippingQuantity || '-'}</div>
@@ -365,41 +400,6 @@ export default function Products() {
                                                     {element.ReceivedQuantity || '-'}
                                                 </td> */}
                                                 <td style={{ textAlign: 'center' }}>{formatDate(element.ProductUpdatedDate)}</td>
-                                                <td style={{ minWidth: '140px', textAlign: 'center', verticalAlign: 'middle' }}>
-                                                    {qrContent ? (
-                                                        <div>
-                                                            <QRCode
-                                                                value={qrContent.url}
-                                                                size={100}
-                                                            />
-                                                            <div style={{
-                                                                fontSize: '11px',
-                                                                marginTop: '8px',
-                                                                color: '#495057',
-                                                                fontWeight: '500',
-                                                                lineHeight: '1.2'
-                                                            }}>
-                                                                {qrContent.label}
-                                                            </div>
-                                                        </div>
-                                                    ) : (
-                                                        <div style={{ padding: '20px' }}>
-                                                            <span style={{
-                                                                color: '#28a745',
-                                                                fontSize: '24px',
-                                                                fontWeight: 'bold'
-                                                            }}>✓</span>
-                                                            <div style={{
-                                                                fontSize: '12px',
-                                                                color: '#28a745',
-                                                                marginTop: '5px',
-                                                                fontWeight: '500'
-                                                            }}>
-                                                                    {t('table.completed')}
-                                                            </div>
-                                                        </div>
-                                                    )}
-                                                </td>
 
                                                 {/* <td><NavLink to={`/updateproduct/${element._id}`} className="btn btn-primary"><i className="fa-solid fa-pen-to-square"></i></NavLink></td>
                                                 <td><button className="btn btn-danger" onClick={() => deleteProduct(element._id)}><i class="fa-solid fa-trash"></i></button></td> */}

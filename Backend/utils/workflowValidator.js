@@ -4,7 +4,7 @@ const { WorkflowConfig } = require('../Models/WorkflowConfig');
  * Validate if enough time has passed between workflow steps
  * @param {Object} product - Product document
  * @param {String} nextStep - Next step to validate
- * @returns {Object} - { isValid: boolean, message: string, remainingMinutes: number }
+ * @returns {Object} - { isValid: boolean, message: string, remainingMinutes: number, remainingSeconds: number }
  */
 const validateWorkflowTiming = async (product, nextStep) => {
     try {
@@ -29,14 +29,15 @@ const validateWorkflowTiming = async (product, nextStep) => {
                 stepDescription = 'nhập kho';
                 break;
             default:
-                return { isValid: true, message: '', remainingMinutes: 0 };
+                return { isValid: true, message: '', remainingMinutes: 0, remainingSeconds: 0 };
         }
 
         if (!previousStepDate) {
             return {
                 isValid: false,
                 message: `Bước trước đó chưa được hoàn thành`,
-                remainingMinutes: 0
+                remainingMinutes: 0,
+                remainingSeconds: 0
             };
         }
 
@@ -53,22 +54,25 @@ const validateWorkflowTiming = async (product, nextStep) => {
         const now = new Date();
         const timeDifferenceMs = now - previousStepDate;
         const timeDifferenceMinutes = Math.floor(timeDifferenceMs / (1000 * 60));
+        const timeDifferenceSeconds = Math.floor(timeDifferenceMs / 1000);
         const remainingMinutes = Math.max(0, config.minimumMinutes - timeDifferenceMinutes);
+        const remainingSeconds = Math.max(0, (config.minimumMinutes * 60) - timeDifferenceSeconds);
 
         if (timeDifferenceMinutes < config.minimumMinutes) {
             return {
                 isValid: false,
                 message: `Cần chờ thêm ${remainingMinutes} phút nữa mới có thể ${stepDescription}. Thời gian tối thiểu là ${config.minimumMinutes} phút.`,
-                remainingMinutes: remainingMinutes
+                remainingMinutes: remainingMinutes,
+                remainingSeconds: remainingSeconds
             };
         }
 
-        return { isValid: true, message: '', remainingMinutes: 0 };
+        return { isValid: true, message: '', remainingMinutes: 0, remainingSeconds: 0 };
 
     } catch (error) {
         console.error('Error validating workflow timing:', error);
         // In case of error, allow the step to proceed
-        return { isValid: true, message: '', remainingMinutes: 0 };
+        return { isValid: true, message: '', remainingMinutes: 0, remainingSeconds: 0 };
     }
 };
 

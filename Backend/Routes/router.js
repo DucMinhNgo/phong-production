@@ -319,7 +319,7 @@ router.get('/assemble-product/:id', async (req, res) => {
         // Check if user is registered first
         const clientIP = getRealIP(req);
         const deviceId = generateDeviceId(req);
-        const scannedUser = await users.findOne({ 
+        const scannedUser = await users.findOne({
             $or: [
                 { DeviceId: deviceId },
                 { DeviceIP: clientIP }
@@ -345,13 +345,30 @@ router.get('/assemble-product/:id', async (req, res) => {
             return res.status(404).send(errorHtml);
         }
 
-        // Validate workflow timing
-        const validation = await validateWorkflowTiming(product, 'assembling');
-        if (!validation.isValid) {
-            const errorHtml = generateHTML(req.language, 'errorPage', {
-                message: validation.message
-            });
-            return res.status(400).send(errorHtml);
+        // Validate workflow timing (skip if skipCountdown is true)
+        const skipCountdown = req.query.skipCountdown === 'true';
+        if (!skipCountdown) {
+            const validation = await validateWorkflowTiming(product, 'assembling');
+            if (!validation.isValid) {
+                // Show countdown page if time remaining is less than or equal to 1 minute
+                if (validation.remainingMinutes <= 1 && validation.remainingMinutes > 0) {
+                    const html = generateHTML(req.language, 'countdownPage', {
+                        message: `Chờ thời gian lắp ráp - ${scannedUser.UserName}`,
+                        remainingSeconds: validation.remainingSeconds,
+                        totalSeconds: validation.remainingSeconds,
+                        productName: `${product.ProductName} (${product.ProductBarcode})`,
+                        nextStep: 'Lắp ráp sản phẩm',
+                        minimumMinutes: '1',
+                        nextUrl: `/assemble-product/${req.params.id}?lang=${req.language}&skipCountdown=true`
+                    });
+                    return res.status(200).send(html);
+                } else {
+                    const errorHtml = generateHTML(req.language, 'errorPage', {
+                        message: validation.message
+                    });
+                    return res.status(400).send(errorHtml);
+                }
+            }
         }
 
         const html = generateHTML(req.language, 'assemblingForm', {
@@ -362,7 +379,7 @@ router.get('/assemble-product/:id', async (req, res) => {
             userName: scannedUser.UserName,
             employeeCode: scannedUser.EmployeeCode
         });
-        
+
         res.status(200).send(html);
     }
     catch (err) {
@@ -379,7 +396,7 @@ router.get('/warehouse-product/:id', async (req, res) => {
         // Check if user is registered first
         const clientIP = getRealIP(req);
         const deviceId = generateDeviceId(req);
-        const scannedUser = await users.findOne({ 
+        const scannedUser = await users.findOne({
             $or: [
                 { DeviceId: deviceId },
                 { DeviceIP: clientIP }
@@ -405,13 +422,30 @@ router.get('/warehouse-product/:id', async (req, res) => {
             return res.status(404).send(errorHtml);
         }
 
-        // Validate workflow timing
-        const validation = await validateWorkflowTiming(product, 'warehousing');
-        if (!validation.isValid) {
-            const errorHtml = generateHTML(req.language, 'errorPage', {
-                message: validation.message
-            });
-            return res.status(400).send(errorHtml);
+        // Validate workflow timing (skip if skipCountdown is true)
+        const skipCountdown = req.query.skipCountdown === 'true';
+        if (!skipCountdown) {
+            const validation = await validateWorkflowTiming(product, 'warehousing');
+            if (!validation.isValid) {
+                // Show countdown page if time remaining is less than or equal to 1 minute
+                if (validation.remainingMinutes <= 1 && validation.remainingMinutes > 0) {
+                    const html = generateHTML(req.language, 'countdownPage', {
+                        message: `Chờ thời gian nhập kho - ${scannedUser.UserName}`,
+                        remainingSeconds: validation.remainingSeconds,
+                        totalSeconds: validation.remainingSeconds,
+                        productName: `${product.ProductName} (${product.ProductBarcode})`,
+                        nextStep: 'Nhập kho sản phẩm',
+                        minimumMinutes: '1',
+                        nextUrl: `/warehouse-product/${req.params.id}?lang=${req.language}&skipCountdown=true`
+                    });
+                    return res.status(200).send(html);
+                } else {
+                    const errorHtml = generateHTML(req.language, 'errorPage', {
+                        message: validation.message
+                    });
+                    return res.status(400).send(errorHtml);
+                }
+            }
         }
 
         const html = generateHTML(req.language, 'warehousingForm', {
@@ -422,7 +456,7 @@ router.get('/warehouse-product/:id', async (req, res) => {
             userName: scannedUser.UserName,
             employeeCode: scannedUser.EmployeeCode
         });
-        
+
         res.status(200).send(html);
     }
     catch (err) {
@@ -1946,6 +1980,28 @@ router.put('/workflow-config/:stepName', async (req, res) => {
             error: error.message,
             language: req.language
         });
+    }
+});
+
+// Test countdown page
+router.get('/test-countdown/:seconds?', async (req, res) => {
+    try {
+        const seconds = parseInt(req.query.seconds) || 45; // Default 45 seconds for testing
+
+        const html = generateHTML(req.language, 'countdownPage', {
+            message: 'Test Countdown Timer',
+            remainingSeconds: seconds,
+            totalSeconds: seconds,
+            productName: 'Test Product (TEST-001)',
+            nextStep: 'Test Next Step',
+            minimumMinutes: '1',
+            nextUrl: '/test-countdown?seconds=' + seconds + '&completed=true'
+        });
+
+        res.status(200).send(html);
+    } catch (error) {
+        console.error('Error generating test countdown page:', error);
+        res.status(500).send('Error loading test countdown');
     }
 });
 

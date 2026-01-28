@@ -734,6 +734,189 @@ const generateHTML = (language, templateType, data = {}) => {
         </html>
       `;
 
+    case 'countdownPage':
+      return `
+        <html>
+          <head>
+            <title>⏰ Đếm ngược thời gian chờ</title>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <style>
+              body {
+                font-family: Arial, sans-serif;
+                text-align: center;
+                padding: 20px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                min-height: 100vh;
+                margin: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              }
+              .container {
+                background: white;
+                padding: 40px;
+                border-radius: 20px;
+                box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+                max-width: 500px;
+                width: 90%;
+              }
+              .icon {
+                font-size: 60px;
+                margin-bottom: 20px;
+              }
+              .title {
+                font-size: 24px;
+                color: #333;
+                margin-bottom: 30px;
+                font-weight: 600;
+              }
+              .countdown {
+                font-size: 72px;
+                font-weight: bold;
+                color: #007bff;
+                margin: 30px 0;
+                font-family: 'Courier New', monospace;
+                text-shadow: 2px 2px 4px rgba(0,123,255,0.3);
+                transition: all 0.3s ease;
+              }
+              .countdown.warning {
+                color: #ffc107;
+                text-shadow: 2px 2px 4px rgba(255,193,7,0.3);
+              }
+              .countdown.danger {
+                color: #dc3545;
+                text-shadow: 2px 2px 4px rgba(220,53,69,0.3);
+                animation: pulse 0.5s infinite;
+              }
+              @keyframes pulse {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.05); }
+                100% { transform: scale(1); }
+              }
+              .unit {
+                font-size: 18px;
+                color: #666;
+                margin-top: 10px;
+                font-weight: 500;
+              }
+              .progress-bar {
+                width: 100%;
+                height: 8px;
+                background-color: #e9ecef;
+                border-radius: 4px;
+                margin: 20px 0;
+                overflow: hidden;
+              }
+              .progress-fill {
+                height: 100%;
+                background: linear-gradient(90deg, #28a745, #ffc107, #dc3545);
+                border-radius: 4px;
+                transition: width 1s ease;
+              }
+              .info {
+                background-color: #f8f9fa;
+                padding: 15px;
+                border-radius: 10px;
+                margin-top: 20px;
+                font-size: 14px;
+                color: #666;
+              }
+              .skip-btn {
+                background-color: #6c757d;
+                color: white;
+                border: none;
+                padding: 12px 24px;
+                border-radius: 8px;
+                font-size: 16px;
+                cursor: pointer;
+                margin-top: 20px;
+                transition: background-color 0.3s ease;
+              }
+              .skip-btn:hover {
+                background-color: #5a6268;
+              }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <div class="icon">⏰</div>
+              <div class="title">${data.message}</div>
+
+              <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+              </div>
+
+              <div class="countdown" id="countdown">${data.remainingSeconds}</div>
+              <div class="unit" id="unitLabel">${data.remainingSeconds === 1 ? 'giây' : 'giây'}</div>
+
+              <div class="info">
+                <strong>Thông tin sản phẩm:</strong><br>
+                ${data.productName}<br>
+                <strong>Bước tiếp theo:</strong> ${data.nextStep}<br>
+                <strong>Thời gian chờ tối thiểu:</strong> ${data.minimumMinutes} phút
+              </div>
+
+              <button class="skip-btn" onclick="skipCountdown()">Bỏ qua đếm ngược</button>
+            </div>
+
+            <script>
+              let remainingTime = ${data.remainingSeconds};
+              const totalTime = ${data.totalSeconds};
+              const countdownElement = document.getElementById('countdown');
+              const unitElement = document.getElementById('unitLabel');
+              const progressFill = document.getElementById('progressFill');
+
+              function updateDisplay() {
+                const minutes = Math.floor(remainingTime / 60);
+                const seconds = remainingTime % 60;
+
+                // Hiển thị theo giây khi dưới 1 phút
+                if (remainingTime < 60) {
+                  countdownElement.textContent = remainingTime;
+                  unitElement.textContent = remainingTime === 1 ? 'giây' : 'giây';
+
+                  // Thay đổi màu sắc khi còn ít thời gian
+                  countdownElement.className = 'countdown';
+                  if (remainingTime <= 10) {
+                    countdownElement.classList.add('danger');
+                  } else if (remainingTime <= 30) {
+                    countdownElement.classList.add('warning');
+                  }
+                } else {
+                  countdownElement.textContent = minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+                  unitElement.textContent = 'phút';
+                  countdownElement.className = 'countdown';
+                }
+
+                // Cập nhật progress bar
+                const progressPercent = ((totalTime - remainingTime) / totalTime) * 100;
+                progressFill.style.width = progressPercent + '%';
+
+                remainingTime--;
+
+                if (remainingTime < 0) {
+                  // Thời gian đã hết, chuyển sang bước tiếp theo
+                  window.location.href = '${data.nextUrl}';
+                }
+              }
+
+              function skipCountdown() {
+                if (confirm('Bạn có chắc muốn bỏ qua thời gian chờ?')) {
+                  window.location.href = '${data.nextUrl}';
+                }
+              }
+
+              // Cập nhật mỗi giây
+              setInterval(updateDisplay, 1000);
+
+              // Cập nhật ngay lập tức
+              updateDisplay();
+            </script>
+          </body>
+        </html>
+      `;
+
     case 'errorPage':
       return `
         <html>
