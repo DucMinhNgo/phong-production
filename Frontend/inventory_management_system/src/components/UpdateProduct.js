@@ -3,10 +3,11 @@ import { NavLink, useParams, useNavigate } from 'react-router-dom';
 import { API_BASE_URL } from '../config';
 
 export default function UpdateProduct() {
-    const [productName, setProductName] = useState("");
+        const [productName, setProductName] = useState("");
     const [productBarcode, setProductBarcode] = useState();
     const [productDeliveryDate, setProductDeliveryDate] = useState("");
     const [productReceivedDate, setProductReceivedDate] = useState("");
+
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const navigate = useNavigate("");
@@ -66,7 +67,6 @@ export default function UpdateProduct() {
       
         getProduct();
     }, [id]);
-
     const updateProduct = async (e) => {
         e.preventDefault();
 

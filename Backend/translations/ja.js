@@ -77,6 +77,13 @@ module.exports = {
   table:{
     lotNumber: 'ット番号',
     quantity: '数量',
+    assembling: '組立',
+    warehousing: '入庫',
+    scanToAssemble: '組立のためにスキャン',
+    scanToWarehouse: '入庫のためにスキャン',
+    assemblingInfo: '組立情報',
+    warehousingInfo: '入庫情報',
+   
     },
 
   workflow: {

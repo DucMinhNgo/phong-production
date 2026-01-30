@@ -47,7 +47,7 @@ const initializeDefaultConfig = async () => {
         if (!globalExists) {
             await WorkflowConfig.create({
                 stepName: 'global_step_delay',
-                minimumMinutes: 1,
+                minimumMinutes: 0.5,
                 description: 'Thời gian tối thiểu giữa mỗi bước quét (áp dụng cho tất cả bước)',
                 isActive: true
             });
