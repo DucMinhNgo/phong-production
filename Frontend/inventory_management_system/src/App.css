@@ -2,8 +2,29 @@
     text-align: right;
 }
 
+/* Cách 1: Dùng position: sticky (khuyên dùng - đơn giản, hiệu suất tốt) */
+.sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;               /* Đảm bảo nằm trên các nội dung khác */
+    background-color: #dc3545;  /* Màu nền đỏ như header hiện tại của bạn */
+}
+
+/* Giữ màu chữ trắng và các style khác nếu cần */
+.sticky-header th {
+    color: white;
+    background-color: #dc3545 !important; /* !important để đè bootstrap nếu cần */
+    border-bottom: 2px solid #fff;        /* đường viền dưới đẹp hơn khi dính */
+}
+
+/* Optional: bóng đổ nhẹ khi cuộn để dễ nhận biết */
+.sticky-header {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
 .tr_color {
     color: white;
     background-color: #3e11a0;
 }
+
 

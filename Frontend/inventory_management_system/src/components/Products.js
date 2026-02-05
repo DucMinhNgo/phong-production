@@ -299,7 +299,7 @@ export default function Products() {
                 </div>
                 <div className="overflow-auto mt-3" style={{ maxHeight: "40rem" }}>
                     <table className="table table-striped table-hover mt-3 fs-6" style={{ minWidth: '1800px' }}>
-                        <thead>
+                            <thead className="sticky-header">
                             <tr className="tr_color">
                                 <th scope="col" style={{ textAlign: 'center' }}>{t('table.stt')}</th>
                                 <th scope="col" style={{ textAlign: 'center' }}>{t('table.createdDate')}</th>
