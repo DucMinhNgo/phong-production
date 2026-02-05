@@ -493,92 +493,72 @@ router.get('/setup-product/:id', async (req, res) => {
 });
 
 router.post('/setup-product/:id', async (req, res) => {
+    console.log("=== NEW SETUP ENDPOINT LOADED ===");
     try {
         const { ProductName, ProductBarcode } = req.body || {};
         const name = (ProductName || '').trim();
-        const baseBarcode = (ProductBarcode || '').trim();
-
-        if (!name || !baseBarcode) {
-            return res.status(400).json({ message: req.t('validation.allFieldsRequired') });
-        }
-
-        if (baseBarcode.length > 20) {
-            return res.status(400).json({ message: req.t('validation.lotNumberTooLong') });
-        }
-
-        const scannedProduct = await products.findById(req.params.id);
-        if (!scannedProduct) {
-            return res.status(404).json({ message: req.t('error.productNotFound') });
-        }
-
-        // Disallow changing identity once workflow started
-        const started = !!(scannedProduct.ProductDeliveryDate || scannedProduct.ProductReceivedDate || scannedProduct.ProductAssemblingDate || scannedProduct.ProductWarehousingDate);
-        if (started) {
-            return res.status(400).json({ message: req.t('error.invalidData', 'Sản phẩm đã bắt đầu quy trình, không thể thay đổi thông tin') });
-        }
-
-        const masterId = scannedProduct.isMasterQR ? scannedProduct._id : (scannedProduct.parentProductId || scannedProduct._id);
-        const groupProducts = await products.find({
-            $or: [{ _id: masterId }, { parentProductId: masterId }]
-        }).sort({ qrCodeIndex: 1 });
-
-        const groupIds = groupProducts.map(p => p._id);
-        const total = (groupProducts[0]?.totalQRCodes) || groupProducts.length || 1;
-        const digitsMax = String(total).length;
-        const baseMaxLen = 20 - (1 + digitsMax); // base + 'Q' + digits
-
-        if (total > 1 && baseBarcode.length > baseMaxLen) {
+        const barcode = (ProductBarcode || '').trim();
+        if (!name || !barcode) {
             return res.status(400).json({
-                message: req.t('validation.lotNumberTooLong', `Số hiệu lố quá dài. Với ${total} QR, tối đa ${baseMaxLen} ký tự.`)
+                message: req.t('validation.allFieldsRequired', 'Vui lòng nhập đầy đủ tên hàng và số hiệu lô')
             });
         }
-
-        // Candidate barcodes for full group (ensure unique outside group)
-        const candidateBarcodes = groupProducts.map((p) => {
-            const idx = p.qrCodeIndex || 1;
-            return idx === 1 ? baseBarcode : `${baseBarcode}Q${idx}`;
-        });
-
-        const conflicts = await products.find({
-            _id: { $nin: groupIds },
-            ProductBarcode: { $in: candidateBarcodes }
-        }).select('_id ProductBarcode');
-
-        if (conflicts.length > 0) {
-            return res.status(422).json({ message: req.t('error.duplicateEntry') });
+        if (barcode.length > 30) {
+            return res.status(400).json({
+                message: req.t('validation.lotNumberTooLong', 'Số hiệu lô quá dài (tối đa 30 ký tự)')
+            });
         }
-
-        const now = new Date();
-        const bulkOps = groupProducts.map((p) => {
-            const idx = p.qrCodeIndex || 1;
-            return {
-                updateOne: {
-                    filter: { _id: p._id },
-                    update: {
-                        $set: {
-                            ProductName: name,
-                            ProductBarcode: idx === 1 ? baseBarcode : `${baseBarcode}Q${idx}`,
-                            needsSetup: false,
-                            ProductUpdatedDate: now
-                        }
-                    }
+        const product = await products.findById(req.params.id);
+        if (!product) {
+            return res.status(404).json({ message: req.t('error.productNotFound') });
+        }
+        // Không cho sửa nếu đã bắt đầu quy trình
+        const started = !!(
+            product.ProductDeliveryDate ||
+            product.ProductReceivedDate ||
+            product.ProductAssemblingDate ||
+            product.ProductWarehousingDate
+        );
+        if (started) {
+            return res.status(400).json({
+                message: 'Sản phẩm đã bắt đầu quy trình, không thể thay đổi thông tin cơ bản'
+            });
+        }
+        // CHỈ UPDATE ĐÚNG SẢN PHẨM NÀY (độc lập hoàn toàn)
+        const updatedProduct = await products.findByIdAndUpdate(
+            req.params.id,
+            {
+                $set: {
+                    ProductName: name,
+                    ProductBarcode: barcode, // mỗi QR có lot riêng
+                    needsSetup: false,
+                    ProductUpdatedDate: new Date()
                 }
-            };
+            },
+            { new: true, runValidators: true }
+        );
+        // Emit socket chỉ cho sản phẩm này
+        const io = req.app.get('io');
+        io.emit('productUpdated', {
+            product: updatedProduct,
+            type: 'setup',
+            timestamp: new Date()
         });
-
-        await products.bulkWrite(bulkOps);
-
-        const updated = await products.find({ _id: { $in: groupIds } }).sort({ qrCodeIndex: 1 });
         return res.status(200).json({
             message: req.t('success.productUpdated', 'Cập nhật thông tin sản phẩm thành công'),
-            data: updated,
-            masterProductId: masterId
+            data: updatedProduct
         });
     } catch (error) {
-        console.error('Error setting up product:', error);
-        return res.status(500).json({ message: req.t('error.serverError'), error: error.message });
+        console.error('Error in setup-product:', error);
+        return res.status(500).json({
+            message: req.t('error.serverError'),
+            error: error.message
+        });
     }
 });
+
+
+   
 
 // Stable QR scan endpoint: one QR per product, never changes.
 // Scanning will redirect to the appropriate next workflow step form.
